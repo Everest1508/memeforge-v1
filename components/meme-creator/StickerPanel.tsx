@@ -61,7 +61,7 @@ const StickerPanel = ({ categoryId, onSelectSticker }: StickerPanelProps) => {
   }
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 h-60 overflow-y-auto p-2 bg-gray-50 rounded-lg border border-gray-200">
+    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 h-98 overflow-y-auto p-2 bg-gray-50 rounded-lg border border-gray-200">
       {stickers.map((sticker) => (
         <div
           key={sticker.id}

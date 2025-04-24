@@ -62,6 +62,14 @@ const config: Config = {
         },
       },
       keyframes: {
+        skeleton: {
+          '0%': { transform: 'translateX(-100%)' },
+          '100%': { transform: 'translateX(100%)' },
+        },
+        fadeInOut: {
+          '0%, 100%': { opacity: '0' },
+          '10%, 90%': { opacity: '1' },
+        },
         'accordion-down': {
           from: {
             height: '0',
@@ -82,6 +90,8 @@ const config: Config = {
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
+        'fade-in-out': 'fadeInOut 4s ease-in-out',
+        'skeleton': 'skeleton 1.5s infinite ease-in-out',
       },
     },
   },

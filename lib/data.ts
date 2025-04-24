@@ -22,6 +22,14 @@ export const stickers: Sticker[] = [
   { id: '9', name: 'OMG', url: 'https://images.pexels.com/photos/3174349/pexels-photo-3174349.jpeg', categoryId: '4' },
   { id: '10', name: 'Blockchain', url: 'https://images.pexels.com/photos/844124/pexels-photo-844124.jpeg', categoryId: '5' },
   { id: '11', name: 'Crypto', url: 'https://images.pexels.com/photos/730547/pexels-photo-730547.jpeg', categoryId: '5' },
+  { id: '12', name: 'Crypto', url: 'https://images.pexels.com/photos/730547/pexels-photo-730547.jpeg', categoryId: '5' },
+  { id: '13', name: 'Crypto', url: 'https://images.pexels.com/photos/730547/pexels-photo-730547.jpeg', categoryId: '5' },
+  { id: '14', name: 'Crypto', url: 'https://images.pexels.com/photos/730547/pexels-photo-730547.jpeg', categoryId: '5' },
+  { id: '15', name: 'Crypto', url: 'https://images.pexels.com/photos/730547/pexels-photo-730547.jpeg', categoryId: '5' },
+  { id: '16', name: 'Crypto', url: 'https://images.pexels.com/photos/730547/pexels-photo-730547.jpeg', categoryId: '5' },
+  { id: '17', name: 'Crypto', url: 'https://images.pexels.com/photos/730547/pexels-photo-730547.jpeg', categoryId: '5' },
+  { id: '18', name: 'Crypto', url: 'https://images.pexels.com/photos/730547/pexels-photo-730547.jpeg', categoryId: '5' },
+  { id: '19', name: 'Crypto', url: 'https://images.pexels.com/photos/730547/pexels-photo-730547.jpeg', categoryId: '5' },
 ];
 
 // Mock data for meme templates
