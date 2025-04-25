@@ -26,6 +26,22 @@ export const fetchStickersByCategorySlug = async (slug: string): Promise<Sticker
   }));
 };
 
+
+// Fetch all meme templates from your API
+export const fetchTemplates = async (): Promise<Template[]> => {
+  const res = await fetch('http://103.75.198.5/api/templates/');
+  if (!res.ok) throw new Error('Failed to fetch templates');
+  const data = await res.json();
+
+  return data.map((item: any) => ({
+    id: item.id.toString(),
+    name: item.name,
+    url: item.url || item.image || '', // fallback for different image keys
+    category: 'Uncategorized', // default value since no category exists
+  }));
+};
+
+
 // --- The rest can stay static unless you're replacing them with real API too ---
 
 // Static meme templates
