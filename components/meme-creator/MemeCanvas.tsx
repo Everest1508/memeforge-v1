@@ -1,8 +1,7 @@
-"use client";
-
 import { useRef, useState, useEffect } from "react";
 import { Sticker, Template } from "@/types";
-import { Download, Share2, Trash2, MoveHorizontal, MoveVertical } from "lucide-react";
+import { Canvas, Image as FabricImage, Rect, Text as FabricText } from "fabric";
+import { Download, Share2, MoveHorizontal, MoveVertical } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface MemeCanvasProps {
@@ -11,50 +10,47 @@ interface MemeCanvasProps {
   selectedTemplate: Template | null;
 }
 
-interface PlacedSticker extends Sticker {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  zIndex: number;
-  isDragging: boolean;
-  rotation: number;
-  scale: number;
-  isResizing: boolean;
-  isRotating: boolean;
-  resizeDirection: string | null;
-  isSelected: boolean;
-  initialWidth: number;
-  initialHeight: number;
-  initialX: number;
-  initialY: number;
-  initialRotation: number;
+interface ExtendedFabricImage extends FabricImage {
+  id?: string;
 }
 
 const MemeCanvas = ({ selectedStickers, onRemoveSticker, selectedTemplate }: MemeCanvasProps) => {
-  const canvasRef = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const fabricCanvasRef = useRef<Canvas | null>(null);
   const [canvasWidth, setCanvasWidth] = useState(600);
   const [canvasHeight, setCanvasHeight] = useState(600);
 
-  const [placedStickers, setPlacedStickers] = useState<PlacedSticker[]>([]);
-  const [activeSticker, setActiveSticker] = useState<string | null>(null);
-  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
-  const [initialAngle, setInitialAngle] = useState(0);
-  const [initialMousePosition, setInitialMousePosition] = useState({ x: 0, y: 0 });
+  useEffect(() => {
+    if (canvasRef.current) {
+      fabricCanvasRef.current = new Canvas(canvasRef.current, {
+        width: canvasWidth,
+        height: canvasHeight,
+        // backgroundColor: "#f3f4f6",
+        selection: false,
+      });
+
+      return () => {
+        fabricCanvasRef.current?.dispose();
+      };
+    }
+  }, []);
 
   useEffect(() => {
-    if (selectedTemplate) {
-      const img = new Image();
-      img.src = selectedTemplate.url;
-      img.onload = () => {
+    if (selectedTemplate && fabricCanvasRef.current) {
+      const canvas = fabricCanvasRef.current;
+      canvas.clear();
+
+      FabricImage.fromURL(selectedTemplate.url, {
+        crossOrigin: 'anonymous'
+      }).then((img: FabricImage) => {
         const maxWidth = 900;
         const maxHeight = 700;
-        const aspectRatio = img.width / img.height;
+        const aspectRatio = img.width! / img.height!;
 
-        let newWidth = img.width;
-        let newHeight = img.height;
+        let newWidth = img.width!;
+        let newHeight = img.height!;
 
-        if (img.width > maxWidth) {
+        if (img.width! > maxWidth) {
           newWidth = maxWidth;
           newHeight = maxWidth / aspectRatio;
         }
@@ -66,221 +62,117 @@ const MemeCanvas = ({ selectedStickers, onRemoveSticker, selectedTemplate }: Mem
 
         setCanvasWidth(newWidth);
         setCanvasHeight(newHeight);
-      };
+        canvas.setWidth(newWidth);
+        canvas.setHeight(newHeight);
+
+        img.set({
+          scaleX: newWidth / img.width!,
+          scaleY: newHeight / img.height!,
+          selectable: false,
+          evented: false,
+          hasControls: false,
+          hasBorders: false,
+          lockMovementX: true,
+          lockMovementY: true,
+          lockRotation: true,
+          lockScalingX: true,
+          lockScalingY: true,
+          hoverCursor: 'default',
+        });
+
+        // Add template first so it's at the bottom
+        canvas.add(img);
+        canvas.sendObjectToBack(img);
+        canvas.renderAll();
+      });
     }
   }, [selectedTemplate]);
 
   useEffect(() => {
-    if (selectedStickers.length > placedStickers.length) {
-      const newSticker = selectedStickers[selectedStickers.length - 1];
-      const uniqueId = newSticker.id + Date.now();
+    if (fabricCanvasRef.current) {
+      const canvas = fabricCanvasRef.current;
+      const currentStickers = canvas
+        .getObjects()
+        .filter((obj) => obj instanceof FabricImage && (obj as ExtendedFabricImage).id) as ExtendedFabricImage[];
 
-      setPlacedStickers([
-        ...placedStickers,
-        {
-          ...newSticker,
-          id: uniqueId,
-          x: 50,
-          y: 50,
-          width: 100,
-          height: 100,
-          zIndex: placedStickers.length + 1,
-          isDragging: false,
-          rotation: 0,
-          scale: 1,
-          isResizing: false,
-          isRotating: false,
-          resizeDirection: null,
-          isSelected: false,
-          initialWidth: 100,
-          initialHeight: 100,
-          initialX: 50,
-          initialY: 50,
-          initialRotation: 0,
-        },
-      ]);
+      currentStickers.forEach((sticker) => {
+        if (!selectedStickers.some((s) => s.id === sticker.id)) {
+          canvas.remove(sticker);
+        }
+      });
+
+      selectedStickers.forEach((sticker) => {
+        if (!currentStickers.some((s) => s.id === sticker.id)) {
+          FabricImage.fromURL(sticker.url, {
+            crossOrigin: 'anonymous'
+          }).then((img: ExtendedFabricImage) => {
+            const maxStickerSize = Math.min(canvasWidth, canvasHeight) * 0.2;
+            const aspectRatio = img.width! / img.height!;
+            
+            let width = maxStickerSize;
+            let height = maxStickerSize / aspectRatio;
+            
+            if (height > maxStickerSize) {
+              height = maxStickerSize;
+              width = maxStickerSize * aspectRatio;
+            }
+
+            img.set({
+              left: canvasWidth * 0.1,
+              top: canvasHeight * 0.1,
+              scaleX: width / img.width!,
+              scaleY: height / img.height!,
+              id: sticker.id,
+              selectable: true,
+              hasControls: true,
+              lockScalingFlip: true,
+              lockRotation: false,
+              hasBorders: true,
+              borderColor: 'blue',
+              cornerColor: 'blue',
+              cornerSize: 8,
+              transparentCorners: false,
+            });
+
+            // img.on('moving', () => {
+            //   const imgWidth = img.width! * img.scaleX!;
+            //   const imgHeight = img.height! * img.scaleY!;
+              
+            //   if (img.left! < 0) img.left = 0;
+            //   if (img.top! < 0) img.top = 0;
+            //   if (img.left! + imgWidth > canvasWidth) img.left = canvasWidth - imgWidth;
+            //   if (img.top! + imgHeight > canvasHeight) img.top = canvasHeight - imgHeight;
+            // });
+
+
+            canvas.add(img);
+            canvas.renderAll();
+          });
+        }
+      });
     }
-  }, [selectedStickers, placedStickers]);
-
-  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>, stickerId: string, action: 'move' | 'resize' | 'rotate' = 'move', direction?: string) => {
-    e.preventDefault();
-    e.stopPropagation();
-    
-    const sticker = placedStickers.find(s => s.id === stickerId);
-    if (!sticker) return;
-
-    const rect = e.currentTarget.getBoundingClientRect();
-    const offsetX = e.clientX - rect.left;
-    const offsetY = e.clientY - rect.top;
-
-    if (action === 'resize' && direction) {
-      setPlacedStickers(
-        placedStickers.map((s) =>
-          s.id === stickerId
-            ? { 
-                ...s, 
-                isResizing: true, 
-                resizeDirection: direction, 
-                zIndex: Math.max(...placedStickers.map((s) => s.zIndex)) + 1,
-                initialWidth: s.width,
-                initialHeight: s.height,
-                initialX: s.x,
-                initialY: s.y
-              }
-            : s
-        )
-      );
-    } else if (action === 'rotate') {
-      const centerX = sticker.x + sticker.width / 2;
-      const centerY = sticker.y + sticker.height / 2;
-      const angle = Math.atan2(offsetY - centerY, offsetX - centerX) * (180 / Math.PI);
-      setInitialAngle(angle);
-      setInitialMousePosition({ x: e.clientX, y: e.clientY });
-      setPlacedStickers(
-        placedStickers.map((s) =>
-          s.id === stickerId
-            ? { 
-                ...s, 
-                isRotating: true, 
-                zIndex: Math.max(...placedStickers.map((s) => s.zIndex)) + 1,
-                initialRotation: s.rotation
-              }
-            : s
-        )
-      );
-    } else {
-      setDragOffset({ x: offsetX, y: offsetY });
-      setPlacedStickers(
-        placedStickers.map((s) =>
-          s.id === stickerId
-            ? { ...s, isDragging: true, zIndex: Math.max(...placedStickers.map((s) => s.zIndex)) + 1 }
-            : s
-        )
-      );
-    }
-
-    setActiveSticker(stickerId);
-  };
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!activeSticker) return;
-
-    const canvasRect = canvasRef.current?.getBoundingClientRect();
-    if (!canvasRect) return;
-
-    const mouseX = e.clientX - canvasRect.left;
-    const mouseY = e.clientY - canvasRect.top;
-    const sticker = placedStickers.find(s => s.id === activeSticker);
-    if (!sticker) return;
-
-    if (sticker.isResizing && sticker.resizeDirection) {
-      const centerX = sticker.initialX + sticker.initialWidth / 2;
-      const centerY = sticker.initialY + sticker.initialHeight / 2;
-      
-      // Calculate distance from center
-      const dx = mouseX - centerX;
-      const dy = mouseY - centerY;
-      
-      // Calculate angle relative to center
-      const angle = Math.atan2(dy, dx);
-      const distance = Math.sqrt(dx * dx + dy * dy);
-      
-      // Calculate scale based on distance from center
-      const baseDistance = Math.sqrt(
-        (sticker.initialWidth / 2) ** 2 + 
-        (sticker.initialHeight / 2) ** 2
-      );
-      
-      let scale = distance / baseDistance;
-      scale = Math.max(0.2, Math.min(scale, 3)); // Limit scale between 0.2 and 3
-
-      const newWidth = sticker.initialWidth * scale;
-      const newHeight = sticker.initialHeight * scale;
-
-      let newX = sticker.initialX;
-      let newY = sticker.initialY;
-
-      switch (sticker.resizeDirection) {
-        case 'nw':
-          newX = sticker.initialX + (sticker.initialWidth - newWidth);
-          newY = sticker.initialY + (sticker.initialHeight - newHeight);
-          break;
-        case 'ne':
-          newY = sticker.initialY + (sticker.initialHeight - newHeight);
-          break;
-        case 'sw':
-          newX = sticker.initialX + (sticker.initialWidth - newWidth);
-          break;
-      }
-
-      setPlacedStickers(
-        placedStickers.map((s) =>
-          s.id === activeSticker
-            ? { 
-                ...s, 
-                width: newWidth, 
-                height: newHeight,
-                x: newX,
-                y: newY
-              }
-            : s
-        )
-      );
-    } else if (sticker.isRotating) {
-      const centerX = sticker.x + sticker.width / 2;
-      const centerY = sticker.y + sticker.height / 2;
-      
-      // Calculate angle between initial mouse position and current position
-      const dx = e.clientX - initialMousePosition.x;
-      const dy = e.clientY - initialMousePosition.y;
-      const angleChange = Math.atan2(dy, dx) * (180 / Math.PI);
-      
-      // Apply rotation with smoothing
-      const newRotation = sticker.initialRotation + angleChange;
-      
-      setPlacedStickers(
-        placedStickers.map((s) =>
-          s.id === activeSticker
-            ? { ...s, rotation: newRotation }
-            : s
-        )
-      );
-    } else if (sticker.isDragging) {
-      setPlacedStickers(
-        placedStickers.map((s) =>
-          s.id === activeSticker
-            ? {
-                ...s,
-                x: mouseX - dragOffset.x,
-                y: mouseY - dragOffset.y,
-              }
-            : s
-        )
-      );
-    }
-  };
-
-  const handleMouseUp = () => {
-    if (!activeSticker) return;
-
-    setPlacedStickers(
-      placedStickers.map((s) =>
-        s.id === activeSticker
-          ? { ...s, isDragging: false, isResizing: false, isRotating: false, resizeDirection: null }
-          : s
-      )
-    );
-
-    setActiveSticker(null);
-  };
-
-  const handleRemoveSticker = (stickerId: string) => {
-    setPlacedStickers(placedStickers.filter((s) => s.id !== stickerId));
-    onRemoveSticker(stickerId);
-  };
+  }, [selectedStickers, onRemoveSticker, canvasWidth, canvasHeight]);
 
   const handleDownload = () => {
-    alert("Download functionality would be implemented here");
+    if (fabricCanvasRef.current) {
+      const canvas = fabricCanvasRef.current;
+      // Convert canvas to data URL
+      const dataURL = canvas.toDataURL({
+        format: 'png',
+        quality: 1,
+        multiplier: 2 // Increase resolution
+      });
+
+      // Create a temporary link element
+      const link = document.createElement('a');
+      link.href = dataURL;
+      link.download = `meme-${Date.now()}.png`; // Add timestamp to filename
+      
+      // Append to body, click, and remove
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
   };
 
   const handleShare = () => {
@@ -288,27 +180,18 @@ const MemeCanvas = ({ selectedStickers, onRemoveSticker, selectedTemplate }: Mem
   };
 
   const handleResize = (direction: "width" | "height", amount: number) => {
-    if (!selectedTemplate) {
-      if (direction === "width") setCanvasWidth((w) => Math.max(100, w + amount));
-      else setCanvasHeight((h) => Math.max(100, h + amount));
-    }
-  };
-
-  const handleStickerClick = (stickerId: string) => {
-    setPlacedStickers(
-      placedStickers.map((s) =>
-        s.id === stickerId
-          ? { ...s, isSelected: true, zIndex: Math.max(...placedStickers.map((s) => s.zIndex)) + 1 }
-          : { ...s, isSelected: false }
-      )
-    );
-    setActiveSticker(stickerId);
-  };
-
-  const handleCanvasClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (e.target === canvasRef.current) {
-      setPlacedStickers(placedStickers.map(s => ({ ...s, isSelected: false })));
-      setActiveSticker(null);
+    if (!selectedTemplate && fabricCanvasRef.current) {
+      const canvas = fabricCanvasRef.current;
+      if (direction === "width") {
+        const newWidth = Math.max(100, canvasWidth + amount);
+        setCanvasWidth(newWidth);
+        canvas.setWidth(newWidth);
+      } else {
+        const newHeight = Math.max(100, canvasHeight + amount);
+        setCanvasHeight(newHeight);
+        canvas.setHeight(newHeight);
+      }
+      canvas.renderAll();
     }
   };
 
@@ -349,93 +232,11 @@ const MemeCanvas = ({ selectedStickers, onRemoveSticker, selectedTemplate }: Mem
         )}
       </div>
 
-      
       <div className="overflow-x-auto w-full">
-
-      <div
-        ref={canvasRef}
-        className="relative bg-gray-100 rounded-lg border-2 border-dashed border-gray-300 overflow-hidden mx-auto"
-        style={{ width: `${canvasWidth}px`, height: `${canvasHeight}px` }}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseUp}
-        onClick={handleCanvasClick}
-      >
-        {selectedTemplate && (
-          <img
-            src={selectedTemplate.url}
-            alt={selectedTemplate.name}
-            className="absolute inset-0 w-full h-full object-contain pointer-events-none"
-          />
-        )}
-
-        {placedStickers.map((sticker) => (
-          <div
-            key={sticker.id}
-            className={`absolute cursor-move ${sticker.isSelected ? "ring-2 ring-blue-500" : ""}`}
-            style={{
-              left: `${sticker.x}px`,
-              top: `${sticker.y}px`,
-              width: `${sticker.width}px`,
-              height: `${sticker.height}px`,
-              zIndex: sticker.zIndex,
-              transform: `rotate(${sticker.rotation}deg)`,
-            }}
-            onClick={(e) => {
-              e.stopPropagation();
-              handleStickerClick(sticker.id);
-            }}
-            onMouseDown={(e) => handleMouseDown(e, sticker.id)}
-          >
-            <img src={sticker.url} alt={sticker.name} className="w-full h-full object-contain" />
-            
-            {/* Controls - only show when sticker is selected */}
-            {sticker.isSelected && (
-              <div className="absolute inset-0 border-2 border-blue-500">
-                {/* Resize handles */}
-                <div
-                  className="absolute -top-1 -left-1 w-3 h-3 bg-white border-2 border-blue-500 rounded-full cursor-nw-resize"
-                  onMouseDown={(e) => handleMouseDown(e, sticker.id, 'resize', 'nw')}
-                />
-                <div
-                  className="absolute -top-1 -right-1 w-3 h-3 bg-white border-2 border-blue-500 rounded-full cursor-ne-resize"
-                  onMouseDown={(e) => handleMouseDown(e, sticker.id, 'resize', 'ne')}
-                />
-                <div
-                  className="absolute -bottom-1 -left-1 w-3 h-3 bg-white border-2 border-blue-500 rounded-full cursor-sw-resize"
-                  onMouseDown={(e) => handleMouseDown(e, sticker.id, 'resize', 'sw')}
-                />
-                <div
-                  className="absolute -bottom-1 -right-1 w-3 h-3 bg-white border-2 border-blue-500 rounded-full cursor-se-resize"
-                  onMouseDown={(e) => handleMouseDown(e, sticker.id, 'resize', 'se')}
-                />
-                
-                {/* Rotation handle */}
-                <div
-                  className="absolute -top-8 left-1/2 transform -translate-x-1/2 w-3 h-3 bg-white border-2 border-blue-500 rounded-full cursor-grab"
-                  onMouseDown={(e) => handleMouseDown(e, sticker.id, 'rotate')}
-                />
-                
-                {/* Delete button - always visible when selected */}
-                <button
-                  className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleRemoveSticker(sticker.id);
-                  }}
-                >
-                  <Trash2 className="h-3 w-3" />
-                </button>
-              </div>
-            )}
-          </div>
-        ))}
-        {!selectedTemplate && placedStickers.length === 0 && (
-          <div className="absolute inset-0 flex items-center justify-center text-gray-400 p-4">
-            <p>Select a template or add stickers to start creating</p>
-          </div>
-        )}
-      </div>
+        <canvas
+          ref={canvasRef}
+          className="border-2 border-dashed border-gray-300 rounded-lg mx-auto"
+        />
       </div>
     </div>
   );
