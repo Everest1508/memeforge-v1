@@ -1,38 +1,34 @@
-import { StickerCategory, Sticker, TeamMember, Milestone, Template } from '@/types';
+import { StickerCategory, Sticker, Template, TeamMember, Milestone } from '@/types';
 
-// Mock data for sticker categories
-export const stickerCategories: StickerCategory[] = [
-  { id: '1', name: 'Faces', icon: '😂' },
-  { id: '2', name: 'Animals', icon: '🐱' },
-  { id: '3', name: 'Objects', icon: '🚀' },
-  { id: '4', name: 'Text', icon: '📝' },
-  { id: '5', name: 'Blockchain', icon: '⛓️' },
-];
+// Fetch all categories from your API
+export const fetchStickerCategories = async (): Promise<StickerCategory[]> => {
+  const res = await fetch('http://103.75.198.5/api/categories/');
+  if (!res.ok) throw new Error('Failed to fetch categories');
+  const data = await res.json();
+  return data.map((item: any) => ({
+    id: item.id.toString(),
+    name: item.name,
+    icon: '🖼️', // Default icon, update if API supports this
+    slug: item.slug,
+  }));
+};
 
-// Mock data for stickers
-export const stickers: Sticker[] = [
-  { id: '1', name: 'Laughing Face', url: 'https://images.pexels.com/photos/207983/pexels-photo-207983.jpeg', categoryId: '1' },
-  { id: '2', name: 'Thinking Face', url: 'https://images.pexels.com/photos/927022/pexels-photo-927022.jpeg', categoryId: '1' },
-  { id: '3', name: 'Cool Face', url: 'https://images.pexels.com/photos/1310474/pexels-photo-1310474.jpeg', categoryId: '1' },
-  { id: '4', name: 'Cat', url: 'https://images.pexels.com/photos/45201/kitty-cat-kitten-pet-45201.jpeg', categoryId: '2' },
-  { id: '5', name: 'Dog', url: 'https://images.pexels.com/photos/1805164/pexels-photo-1805164.jpeg', categoryId: '2' },
-  { id: '6', name: 'Rocket', url: 'https://images.pexels.com/photos/73871/rocket-launch-rocket-take-off-nasa-73871.jpeg', categoryId: '3' },
-  { id: '7', name: 'Computer', url: 'https://images.pexels.com/photos/1779487/pexels-photo-1779487.jpeg', categoryId: '3' },
-  { id: '8', name: 'LOL', url: 'https://images.pexels.com/photos/3807639/pexels-photo-3807639.jpeg', categoryId: '4' },
-  { id: '9', name: 'OMG', url: 'https://images.pexels.com/photos/3174349/pexels-photo-3174349.jpeg', categoryId: '4' },
-  { id: '10', name: 'Blockchain', url: 'https://images.pexels.com/photos/844124/pexels-photo-844124.jpeg', categoryId: '5' },
-  { id: '11', name: 'Crypto', url: 'https://images.pexels.com/photos/730547/pexels-photo-730547.jpeg', categoryId: '5' },
-  { id: '12', name: 'Crypto', url: 'https://images.pexels.com/photos/730547/pexels-photo-730547.jpeg', categoryId: '5' },
-  { id: '13', name: 'Crypto', url: 'https://images.pexels.com/photos/730547/pexels-photo-730547.jpeg', categoryId: '5' },
-  { id: '14', name: 'Crypto', url: 'https://images.pexels.com/photos/730547/pexels-photo-730547.jpeg', categoryId: '5' },
-  { id: '15', name: 'Crypto', url: 'https://images.pexels.com/photos/730547/pexels-photo-730547.jpeg', categoryId: '5' },
-  { id: '16', name: 'Crypto', url: 'https://images.pexels.com/photos/730547/pexels-photo-730547.jpeg', categoryId: '5' },
-  { id: '17', name: 'Crypto', url: 'https://images.pexels.com/photos/730547/pexels-photo-730547.jpeg', categoryId: '5' },
-  { id: '18', name: 'Crypto', url: 'https://images.pexels.com/photos/730547/pexels-photo-730547.jpeg', categoryId: '5' },
-  { id: '19', name: 'Crypto', url: 'https://images.pexels.com/photos/730547/pexels-photo-730547.jpeg', categoryId: '5' },
-];
+// Fetch all stickers for a given category slug
+export const fetchStickersByCategorySlug = async (slug: string): Promise<Sticker[]> => {
+  const res = await fetch(`http://103.75.198.5/api/categories/${slug}/images/`);
+  if (!res.ok) throw new Error(`Failed to fetch stickers for ${slug}`);
+  const data = await res.json();
+  return data.map((item: any) => ({
+    id: item.id.toString(),
+    name: item.name,
+    url: item.url || item.image || '', // fallback key names depending on API
+    categoryId: slug,
+  }));
+};
 
-// Mock data for meme templates
+// --- The rest can stay static unless you're replacing them with real API too ---
+
+// Static meme templates
 export const templates: Template[] = [
   {
     id: '1',
@@ -72,7 +68,7 @@ export const templates: Template[] = [
   },
 ];
 
-// Mock data for team members
+// Static team members
 export const teamMembers: TeamMember[] = [
   {
     id: '1',
@@ -122,7 +118,7 @@ export const teamMembers: TeamMember[] = [
   },
 ];
 
-// Mock data for roadmap
+// Static roadmap milestones
 export const roadmapMilestones: Milestone[] = [
   {
     id: '1',
@@ -173,33 +169,3 @@ export const roadmapMilestones: Milestone[] = [
     icon: '🌎',
   },
 ];
-
-// Function to simulate fetching stickers by category (to mimic API call)
-export const fetchStickersByCategory = (categoryId: string): Promise<Sticker[]> => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      const filteredStickers = stickers.filter(
-        (sticker) => sticker.categoryId === categoryId
-      );
-      resolve(filteredStickers);
-    }, 500); // Simulate network delay
-  });
-};
-
-// Function to simulate fetching all categories (to mimic API call)
-export const fetchStickerCategories = (): Promise<StickerCategory[]> => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(stickerCategories);
-    }, 300); // Simulate network delay
-  });
-};
-
-// Function to simulate fetching templates (to mimic API call)
-export const fetchTemplates = (): Promise<Template[]> => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(templates);
-    }, 300); // Simulate network delay
-  });
-};
