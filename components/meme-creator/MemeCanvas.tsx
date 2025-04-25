@@ -189,10 +189,10 @@ const MemeCanvas = ({ selectedStickers, onRemoveSticker, selectedTemplate }: Mem
         <div className="flex justify-between items-center">
           <h2 className="text-xl font-bold text-gray-800">Canvas</h2>
           <div className="flex space-x-2">
-            <Button size="sm" variant="outline" className="flex items-center gap-2" onClick={handleShare}>
+            {/* <Button size="sm" variant="outline" className="flex items-center gap-2" onClick={handleShare}>
               <Share2 className="h-4 w-4" />
               <span>Share</span>
-            </Button>
+            </Button> */}
             <Button size="sm" className="flex items-center gap-2 bg-red-600 hover:bg-red-700" onClick={handleDownload}>
               <Download className="h-4 w-4" />
               <span>Download</span>
