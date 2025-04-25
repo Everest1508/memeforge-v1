@@ -134,17 +134,6 @@ const MemeCanvas = ({ selectedStickers, onRemoveSticker, selectedTemplate }: Mem
               transparentCorners: false,
             });
 
-            // img.on('moving', () => {
-            //   const imgWidth = img.width! * img.scaleX!;
-            //   const imgHeight = img.height! * img.scaleY!;
-              
-            //   if (img.left! < 0) img.left = 0;
-            //   if (img.top! < 0) img.top = 0;
-            //   if (img.left! + imgWidth > canvasWidth) img.left = canvasWidth - imgWidth;
-            //   if (img.top! + imgHeight > canvasHeight) img.top = canvasHeight - imgHeight;
-            // });
-
-
             canvas.add(img);
             canvas.renderAll();
           });
@@ -166,9 +155,8 @@ const MemeCanvas = ({ selectedStickers, onRemoveSticker, selectedTemplate }: Mem
       // Create a temporary link element
       const link = document.createElement('a');
       link.href = dataURL;
-      link.download = `meme-${Date.now()}.png`; // Add timestamp to filename
+      link.download = `meme-${Date.now()}.png`; 
       
-      // Append to body, click, and remove
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);

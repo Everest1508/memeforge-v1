@@ -18,14 +18,14 @@ export default function MemeCreatorPage() {
     setSelectedStickers(selectedStickers.filter(s => s.id !== stickerId));
   };
 
-  const handleSelectTemplate = (template: Template) => {
+  const handleSelectTemplate: (template: Template) => void = (template: Template) => {
     setSelectedTemplate(template);
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 font-[Inter] mt-24">
       <div className="mb-8">
-        <h1 className="text-3xl md:text-4xl font-bold text-gray-900">Meme Lab</h1>
+        <h1 className="text-3xl md:text-4xl font-bold text-gray-900 font-[SpaceComic]">Meme Lab</h1>
         <p className="text-gray-600 mt-2">Create and customize your blockchain-powered memes</p>
       </div>
       

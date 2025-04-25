@@ -1,11 +1,8 @@
 import './globals.css';
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
 import { ThemeProvider } from '@/lib/theme-provider';
 import Navbar from '@/components/layout/Navbar';
 import { Toaster } from '@/components/ui/toaster';
-
-const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: 'MemeForge - Blockchain-Based Meme Creation',
@@ -19,7 +16,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
+      <body className="font-space-comic">
         <ThemeProvider
           attribute="class"
           defaultTheme="light"
@@ -29,13 +26,13 @@ export default function RootLayout({
           <div className="min-h-screen flex flex-col">
             <Navbar />
             <main className="flex-grow">{children}</main>
-            <footer className="bg-red-900 text-white py-6">
+            {/* <footer className="bg-red-900 text-white py-6">
               <div className="container mx-auto px-4">
                 <div className="text-center">
                   <p className="text-sm">© 2025 MemeForge. All rights reserved.</p>
                 </div>
               </div>
-            </footer>
+            </footer> */}
           </div>
           <Toaster />
         </ThemeProvider>

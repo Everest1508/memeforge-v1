@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Loader2 } from 'lucide-react';
 import { Sticker } from '@/types';
-import { fetchStickersByCategory } from '@/lib/data';
+import { fetchStickersByCategorySlug } from '@/lib/data';
 
 interface StickerPanelProps {
   categoryId: string | null;
@@ -24,7 +24,7 @@ const StickerPanel = ({ categoryId, onSelectSticker }: StickerPanelProps) => {
     const loadStickers = async () => {
       setLoading(true);
       try {
-        const data = await fetchStickersByCategory(categoryId);
+        const data = await fetchStickersByCategorySlug(categoryId);
         setStickers(data);
       } catch (error) {
         console.error('Failed to fetch stickers:', error);
