@@ -243,21 +243,45 @@ const MemeCanvas = ({ selectedStickers, onRemoveSticker, selectedTemplate, selec
         </div>
       </div>
 
-      <div className="flex w-full gap-4 mb-4 overflow-x-auto px-4 md:justify-center">
+      <div className="flex w-full gap-4 mb-4 overflow-x-auto px-4 md:justify-center p-2">
         {!selectedTemplate && (
           <>
-            <Button size="sm" variant="outline" onClick={() => handleResize("width", -50)}>
+            <Button 
+              size="sm" 
+              variant="outline" 
+              className="drop-shadow-[2px_2px_0px_#000]"
+              onClick={() => handleResize("width", -50)}
+            >
               <MoveHorizontal className="h-4 w-4" /> Shrink Width
             </Button>
-            <Button size="sm" variant="outline" onClick={() => handleResize("width", 50)}>
+
+            <Button 
+              size="sm" 
+              variant="outline" 
+              className="drop-shadow-[2px_2px_0px_#000]"
+              onClick={() => handleResize("width", 50)}
+            >
               <MoveHorizontal className="h-4 w-4 rotate-180" /> Expand Width
             </Button>
-            <Button size="sm" variant="outline" onClick={() => handleResize("height", -50)}>
+
+            <Button 
+              size="sm" 
+              variant="outline" 
+              className="drop-shadow-[2px_2px_0px_#000]"
+              onClick={() => handleResize("height", -50)}
+            >
               <MoveVertical className="h-4 w-4" /> Shrink Height
             </Button>
-            <Button size="sm" variant="outline" onClick={() => handleResize("height", 50)}>
+
+            <Button 
+              size="sm" 
+              variant="outline" 
+              className="drop-shadow-[2px_2px_0px_#000]"
+              onClick={() => handleResize("height", 50)}
+            >
               <MoveVertical className="h-4 w-4 rotate-180" /> Expand Height
             </Button>
+
           </>
         )}
       </div>

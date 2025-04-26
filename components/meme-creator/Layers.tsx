@@ -49,12 +49,12 @@ export default function Layers({
 
       {/* Tab Content */}
       {activeTab === 'layers' && (
-        <div>
+        <div className="">
           {selectedStickers.length === 0 ? (
             <p className="text-gray-400">No stickers added.</p>
           ) : (
             selectedStickers.map(sticker => (
-              <div key={sticker.id} className="flex justify-between items-center mb-2">
+              <div key={sticker.id} className="flex justify-between items-center mb-2 max-h-8 h-8 overflow-y-auto">
                 <span>{sticker.name}</span>
                 <button
                   className="text-red-500 hover:text-red-700"

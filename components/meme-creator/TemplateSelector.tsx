@@ -36,7 +36,7 @@ const TemplateSelector = ({ onSelectTemplate }: TemplateSelectorProps) => {
   }, []);
 
   return (
-    <div className="bg-white rounded-lg shadow-sm p-4 mt-6">
+    <div className="bg-white rounded-lg drop-shadow-[2px_2px_0px_#000] p-4 mt-6">
       <h2 className="text-xl font-bold text-gray-800 mb-4">Templates</h2>
       <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
         {loading
@@ -46,7 +46,7 @@ const TemplateSelector = ({ onSelectTemplate }: TemplateSelectorProps) => {
           : templates.map((template) => (
               <div
                 key={template.id}
-                className="relative aspect-square cursor-pointer group overflow-hidden rounded-lg border border-gray-200 hover:border-red-400 transition-all"
+                className="relative aspect-square cursor-pointer group overflow-hidden rounded-lg border border-gray-200 hover:border-red-400 drop-shadow-[2px_2px_0px_#000] transition-all"
                 onClick={() => onSelectTemplate(template)}
                 >
                   <Image
