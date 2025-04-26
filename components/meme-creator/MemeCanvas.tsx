@@ -40,7 +40,7 @@ const MemeCanvas = ({ selectedStickers, onRemoveSticker, selectedTemplate }: Mem
       const canvas = fabricCanvasRef.current;
       canvas.clear();
 
-      FabricImage.fromURL(selectedTemplate.url, {
+      FabricImage.fromURL("https://memeforge.mooo.com"+selectedTemplate.url, {
         crossOrigin: 'anonymous'
       }).then((img: FabricImage) => {
         const maxWidth = 900;
