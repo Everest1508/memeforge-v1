@@ -1,16 +1,29 @@
 "use client";
 
 import { useState } from 'react';
-import { Sticker, Template } from '@/types';
+import { Sticker, Template, TextElement } from '@/types';
 import MemeCanvas from '@/components/meme-creator/MemeCanvas';
 import Toolbar from '@/components/meme-creator/Toolbar';
 import TemplateSelector from '@/components/meme-creator/TemplateSelector';
 import Layers from '@/components/meme-creator/Layers';  // <-- Import Layers component
 import { motion } from 'framer-motion';
 
+
+
 export default function MemeCreatorPage() {
   const [selectedStickers, setSelectedStickers] = useState<Sticker[]>([]);
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
+  const [selectedTexts, setSelectedTexts] = useState<TextElement[]>([]);
+
+    // Function to add text
+  const handleAddText = (text: TextElement) => {
+    setSelectedTexts([...selectedTexts, text]);
+  };
+
+  // Function to remove text
+  const handleRemoveText = (textId: string) => {
+    setSelectedTexts(selectedTexts.filter(t => t.id !== textId));
+  };
 
   // Function to handle selecting a sticker (add to the list)
   const handleSelectSticker = (sticker: Sticker) => {
@@ -37,11 +50,13 @@ export default function MemeCreatorPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Canvas section - 100% width on mobile, 50% on desktop */}
         <div className="lg:order-1 lg:col-span-1">
-          <MemeCanvas 
-            selectedStickers={selectedStickers} 
-            onRemoveSticker={handleRemoveSticker}
-            selectedTemplate={selectedTemplate}
-          />
+        <MemeCanvas 
+          selectedStickers={selectedStickers} 
+          selectedTexts={selectedTexts}   // <-- pass texts!
+          onRemoveSticker={handleRemoveSticker}
+          selectedTemplate={selectedTemplate}
+        />
+
         </div>
         
         {/* Tools section */}
@@ -51,8 +66,12 @@ export default function MemeCreatorPage() {
           {/* Add Layers component below Toolbar */}
           <Layers 
             selectedStickers={selectedStickers} 
-            onRemoveSticker={handleRemoveSticker} 
+            onRemoveSticker={handleRemoveSticker}
+            selectedTexts={selectedTexts}
+            onAddText={handleAddText}
+            onRemoveText={handleRemoveText}
           />
+
         </div>
       </div>
       <div className="mt-8">

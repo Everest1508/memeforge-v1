@@ -41,3 +41,13 @@ export interface Template {
   category: string;
 }
 
+
+export interface TextElement {
+  id: string;
+  text: string;
+  left?: number;
+  top?: number;
+  fontSize?: number;
+  color?: string;
+  fontFamily?: string;
+}
