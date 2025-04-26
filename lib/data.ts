@@ -8,7 +8,7 @@ export const fetchStickerCategories = async (): Promise<StickerCategory[]> => {
   return data.map((item: any) => ({
     id: item.id.toString(),
     name: item.name,
-    icon: '🖼️', // Default icon, update if API supports this
+    icon: '🖼️', 
     slug: item.slug,
   }));
 };
@@ -21,7 +21,7 @@ export const fetchStickersByCategorySlug = async (slug: string): Promise<Sticker
   return data.map((item: any) => ({
     id: item.id.toString(),
     name: item.name,
-    url: item.url || item.image || '', // fallback key names depending on API
+    url: item.url || item.image || '',
     categoryId: slug,
   }));
 };
