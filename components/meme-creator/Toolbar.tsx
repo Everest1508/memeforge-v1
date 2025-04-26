@@ -49,7 +49,7 @@ const Toolbar = ({ onSelectSticker }: ToolbarProps) => {
         const data = await fetchStickerCategories();
         setCategories(data);
         if (data.length > 0) {
-          setSelectedCategory(data[0].id);
+          setSelectedCategory(data[0].slug);
         }
       } catch (error) {
         console.error('Failed to fetch categories:', error);

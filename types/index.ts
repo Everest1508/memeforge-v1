@@ -8,7 +8,8 @@ export interface Sticker {
 export interface StickerCategory {
   id: string;
   name: string;
-  icon?: string;
+  icon?: string; // Ensure consistency across declarations
+  slug: string;     // <-- ADD THIS LINE
 }
 
 export interface TeamMember {
@@ -39,3 +40,4 @@ export interface Template {
   url: string;
   category: string;
 }
+
