@@ -52,7 +52,7 @@ export default function MemeCreatorPage() {
         <div className="lg:order-1 lg:col-span-1">
         <MemeCanvas 
           selectedStickers={selectedStickers} 
-          selectedTexts={selectedTexts}   // <-- pass texts!
+          selectedTexts={selectedTexts}
           onRemoveSticker={handleRemoveSticker}
           selectedTemplate={selectedTemplate}
         />
