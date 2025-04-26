@@ -2,7 +2,7 @@ import { StickerCategory, Sticker, Template, TeamMember, Milestone } from '@/typ
 
 // Fetch all categories from your API
 export const fetchStickerCategories = async (): Promise<StickerCategory[]> => {
-  const res = await fetch('http://103.75.198.5/api/categories/');
+  const res = await fetch('https://memeforge.mooo.com/api/categories/');
   if (!res.ok) throw new Error('Failed to fetch categories');
   const data = await res.json();
   return data.map((item: any) => ({
@@ -15,7 +15,7 @@ export const fetchStickerCategories = async (): Promise<StickerCategory[]> => {
 
 // Fetch all stickers for a given category slug
 export const fetchStickersByCategorySlug = async (slug: string): Promise<Sticker[]> => {
-  const res = await fetch(`http://103.75.198.5/api/categories/${slug}/images/`);
+  const res = await fetch(`https://memeforge.mooo.com/api/categories/${slug}/images/`);
   if (!res.ok) throw new Error(`Failed to fetch stickers for ${slug}`);
   const data = await res.json();
   return data.map((item: any) => ({
@@ -29,7 +29,7 @@ export const fetchStickersByCategorySlug = async (slug: string): Promise<Sticker
 
 // Fetch all meme templates from your API
 export const fetchTemplates = async (): Promise<Template[]> => {
-  const res = await fetch('http://103.75.198.5/api/templates/');
+  const res = await fetch('https://memeforge.mooo.com/api/templates/');
   if (!res.ok) throw new Error('Failed to fetch templates');
   const data = await res.json();
 
