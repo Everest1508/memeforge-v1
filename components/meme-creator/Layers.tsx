@@ -1,34 +1,106 @@
-// components/meme-creator/Layers.tsx
-import { Sticker } from "@/types";
+import { useState } from "react";
+import { Sticker, TextElement } from '@/types';
 
-interface LayersProps {
+type LayersProps = {
   selectedStickers: Sticker[];
   onRemoveSticker: (stickerId: string) => void;
-}
+  selectedTexts: TextElement[];
+  onAddText: (text: TextElement) => void;
+  onRemoveText: (textId: string) => void;
+};
 
-export default function Layers({ selectedStickers, onRemoveSticker }: LayersProps) {
+export default function Layers({
+  selectedStickers,
+  onRemoveSticker,
+  selectedTexts,
+  onAddText,
+  onRemoveText,
+}: LayersProps) {
+  const [activeTab, setActiveTab] = useState<'layers' | 'text'>('layers');
+  const [newText, setNewText] = useState('');
+
+  const handleAddText = () => {
+    if (newText.trim() !== '') {
+      onAddText({
+        id: Date.now().toString(),
+        text: newText,
+      });
+      setNewText('');
+    }
+  };
+
   return (
-    <div className="bg-white p-4 rounded-2xl shadow-md mt-6">
-      <h2 className="text-xl font-bold mb-4">Layers</h2>
-      {selectedStickers.length === 0 ? (
-        <p className="text-gray-500">No layers added yet.</p>
-      ) : (
-        <ul className="space-y-2">
-          {selectedStickers.map((sticker) => (
-            <li
-              key={sticker.id}
-              className="flex justify-between items-center p-2 bg-gray-100 rounded-lg"
+    <div className="bg-white p-4 rounded-2xl shadow-md">
+      {/* Tabs */}
+      <div className="flex border-b mb-4">
+        <button
+          className={`px-4 py-2 font-bold ${activeTab === 'layers' ? 'border-b-2 border-red-500' : 'text-gray-500'}`}
+          onClick={() => setActiveTab('layers')}
+        >
+          Layers
+        </button>
+        <button
+          className={`px-4 py-2 font-bold ${activeTab === 'text' ? 'border-b-2 border-red-500' : 'text-gray-500'}`}
+          onClick={() => setActiveTab('text')}
+        >
+          Text
+        </button>
+      </div>
+
+      {/* Tab Content */}
+      {activeTab === 'layers' && (
+        <div>
+          {selectedStickers.length === 0 ? (
+            <p className="text-gray-400">No stickers added.</p>
+          ) : (
+            selectedStickers.map(sticker => (
+              <div key={sticker.id} className="flex justify-between items-center mb-2">
+                <span>{sticker.name}</span>
+                <button
+                  className="text-red-500 hover:text-red-700"
+                  onClick={() => onRemoveSticker(sticker.id)}
+                >
+                  Remove
+                </button>
+              </div>
+            ))
+          )}
+        </div>
+      )}
+
+      {activeTab === 'text' && (
+        <div>
+          <div className="flex mb-2">
+            <input
+              type="text"
+              className="flex-1 border p-2 rounded-l"
+              placeholder="Enter text"
+              value={newText}
+              onChange={(e) => setNewText(e.target.value)}
+            />
+            <button
+              onClick={handleAddText}
+              className="bg-red-500 text-white px-4 rounded-r hover:bg-red-600"
             >
-              <span>{sticker.name}</span>
-              <button
-                className="text-red-500 hover:text-red-700 text-sm"
-                onClick={() => onRemoveSticker(sticker.id)}
-              >
-                Remove
-              </button>
-            </li>
-          ))}
-        </ul>
+              Add
+            </button>
+          </div>
+          {selectedTexts.length === 0 ? (
+            <p className="text-gray-400">No text added.</p>
+          ) : (
+            selectedTexts.map(text => (
+              <div key={text.id} className="flex justify-between items-center mb-2">
+                <span>{text.text}</span>
+                <button
+                  className="text-red-500 hover:text-red-700"
+                  onClick={() => onRemoveText(text.id)}
+                >
+                  Remove
+                </button>
+              </div>
+            ))
+          )}
+        </div>
       )}
     </div>
   );

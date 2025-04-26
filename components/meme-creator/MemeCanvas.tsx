@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from "react";
-import { Sticker, Template } from "@/types";
+import { Sticker, Template, TextElement } from "@/types";
 import { Canvas, Image as FabricImage, Rect, Text as FabricText } from "fabric";
 import { Download, Share2, MoveHorizontal, MoveVertical } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -8,13 +8,14 @@ interface MemeCanvasProps {
   selectedStickers: Sticker[];
   onRemoveSticker: (id: string) => void;
   selectedTemplate: Template | null;
+  selectedTexts: TextElement[];
 }
 
 interface ExtendedFabricImage extends FabricImage {
   id?: string;
 }
 
-const MemeCanvas = ({ selectedStickers, onRemoveSticker, selectedTemplate }: MemeCanvasProps) => {
+const MemeCanvas = ({ selectedStickers, onRemoveSticker, selectedTemplate, selectedTexts }: MemeCanvasProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fabricCanvasRef = useRef<Canvas | null>(null);
   const [canvasWidth, setCanvasWidth] = useState(600);
@@ -34,6 +35,47 @@ const MemeCanvas = ({ selectedStickers, onRemoveSticker, selectedTemplate }: Mem
       };
     }
   }, []);
+
+  useEffect(() => {
+    if (fabricCanvasRef.current) {
+      const canvas = fabricCanvasRef.current;
+  
+      // Remove old text objects
+      const currentTexts = canvas.getObjects()
+        .filter((obj) => obj.type === "text" && (obj as any).customType === "addedText");
+  
+      currentTexts.forEach((textObj) => {
+        canvas.remove(textObj);
+      });
+  
+      // Add new text objects
+      selectedTexts.forEach((textElement) => {
+        const fabricText = new FabricText(textElement.text, {
+          left: textElement.left || 100,
+          top: textElement.top || 100,
+          fontSize: textElement.fontSize || 24,
+          fill: textElement.color || "black",
+          fontFamily: textElement.fontFamily || "Arial",
+          selectable: true,
+          hasControls: true,
+          lockScalingFlip: true,
+          lockRotation: false,
+          hasBorders: true,
+          borderColor: 'blue',
+          cornerColor: 'blue',
+          cornerSize: 8,
+          transparentCorners: false,
+        });
+  
+        (fabricText as any).customType = "addedText";  // mark it so we know it's our text
+  
+        canvas.add(fabricText);
+      });
+  
+      canvas.renderAll();
+    }
+  }, [selectedTexts, canvasWidth, canvasHeight]);
+  
 
   useEffect(() => {
     if (selectedTemplate && fabricCanvasRef.current) {
