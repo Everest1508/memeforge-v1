@@ -8,8 +8,8 @@ export interface Sticker {
 export interface StickerCategory {
   id: string;
   name: string;
-  icon?: string; // Ensure consistency across declarations
-  slug: string;     // <-- ADD THIS LINE
+  icon?: string;
+  slug: string; 
 }
 
 export interface TeamMember {
