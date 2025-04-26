@@ -48,14 +48,14 @@ const TemplateSelector = ({ onSelectTemplate }: TemplateSelectorProps) => {
                 key={template.id}
                 className="relative aspect-square cursor-pointer group overflow-hidden rounded-lg border border-gray-200 hover:border-red-400 transition-all"
                 onClick={() => onSelectTemplate(template)}
-              >
-                <Image
-                  src={template.url}
-                  alt={template.name}
-                  fill
-                  sizes="(max-width: 768px) 100vw, 33vw"
-                  className="object-cover group-hover:scale-105 transition-transform duration-200"
-                />
+                >
+                  <Image
+                    src={`https://memeforge.mooo.com${template.url}`}
+                    alt={template.name}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                    className="object-cover group-hover:scale-105 transition-transform duration-200"
+                  />
                 <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all flex items-end justify-center">
                   <p className="text-white text-sm font-medium pb-2 transform translate-y-full group-hover:translate-y-0 transition-transform">
                     {template.name}
