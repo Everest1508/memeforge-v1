@@ -5,28 +5,33 @@ import { Sticker, Template } from '@/types';
 import MemeCanvas from '@/components/meme-creator/MemeCanvas';
 import Toolbar from '@/components/meme-creator/Toolbar';
 import TemplateSelector from '@/components/meme-creator/TemplateSelector';
+import Layers from '@/components/meme-creator/Layers';  // <-- Import Layers component
+import { motion } from 'framer-motion';
 
 export default function MemeCreatorPage() {
   const [selectedStickers, setSelectedStickers] = useState<Sticker[]>([]);
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
 
+  // Function to handle selecting a sticker (add to the list)
   const handleSelectSticker = (sticker: Sticker) => {
     setSelectedStickers([...selectedStickers, sticker]);
   };
 
+  // Function to handle removing a sticker (remove from the list)
   const handleRemoveSticker = (stickerId: string) => {
     setSelectedStickers(selectedStickers.filter(s => s.id !== stickerId));
   };
 
+  // Function to handle selecting a template
   const handleSelectTemplate: (template: Template) => void = (template: Template) => {
     setSelectedTemplate(template);
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 font-[Inter] mt-24">
-      <div className="mb-8">
-        <h1 className="text-3xl md:text-4xl font-bold text-gray-900 font-[SpaceComic]">Meme Lab</h1>
-        <p className="text-gray-600 mt-2">Create and customize your blockchain-powered memes</p>
+    <div className="mx-auto md:px-24 py-12 px-4 font-[Inter] pt-28 min-h-screen">
+
+      <div className="mb-8 mt-4">
+        <h1 className="text-3xl md:text-4xl font-bold text-[#EF4444] drop-shadow-[2px_2px_0px_#000] font-[SpaceComic]">Meme Lab</h1>
       </div>
       
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -42,8 +47,16 @@ export default function MemeCreatorPage() {
         {/* Tools section */}
         <div className="lg:order-2 lg:col-span-1">
           <Toolbar onSelectSticker={handleSelectSticker} />
-          <TemplateSelector onSelectTemplate={handleSelectTemplate} />
+          
+          {/* Add Layers component below Toolbar */}
+          <Layers 
+            selectedStickers={selectedStickers} 
+            onRemoveSticker={handleRemoveSticker} 
+          />
         </div>
+      </div>
+      <div className="mt-8">
+        <TemplateSelector onSelectTemplate={handleSelectTemplate} />  
       </div>
     </div>
   );

@@ -6,8 +6,20 @@ import { motion } from 'framer-motion';
 
 const HeroSection = () => {
   return (
-    <div className="relative text-white w-screen font-[SpaceComic]">
-      <div className="bg-black/60">
+      <div className="relative text-white w-full min-h-screen flex items-center justify-center font-[SpaceComic]">
+        <div className=''>
+      <div className="absolute inset-0 z-0">
+        <motion.div
+          initial={{ scaleY: 1 }}
+          animate={{ scaleY: [1, 0.95, 1] }}
+          transition={{
+            repeat: Infinity,
+            duration: 6,
+            ease: "easeInOut",
+          }}
+          className="w-full h-full bg-[url('https://www.tabichain.com/images/new/bg/2.svg')] bg-cover bg-center"
+        />
+      </div>
         <div className="container mx-auto px-4 relative z-10">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center py-16 md:py-24">
             {/* Empty div for spacing */}
