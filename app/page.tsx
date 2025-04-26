@@ -3,13 +3,17 @@
 import HeroSection from '@/components/home/HeroSection';
 import FeaturesSection from '@/components/home/FeaturesSection';
 import { motion } from 'framer-motion';
+import Head from "next/head";
 
 export default function Home() {
   return (
     <div className="min-h-screen">
+      <Head>
+          <link rel="icon" href="/favicon.ico" />
+      </Head>
       {/* Background image wrapper */}
       <div
-        className="bg-cover bg-center min-h-screen flex items-center justify-center w-full"
+        className="bg-cover md:bg-center bg-[left_center] min-h-screen flex items-center justify-center w-full"
         style={{ backgroundImage: "url('/images/background/landing-page.PNG')" }}
       >
         <HeroSection />

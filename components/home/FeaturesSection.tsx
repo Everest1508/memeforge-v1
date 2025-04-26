@@ -57,7 +57,7 @@ const FeaturesSection = () => {
                 stiffness: 50,
               }}
               viewport={{ once: true, amount: 0.3 }}
-              className="bg-white border border-gray-200 rounded-2xl p-6 flex flex-col items-center text-center shadow-lg hover:scale-105 transition-transform duration-300"
+              className="bg-white border border-gray-200 rounded-2xl p-6 flex flex-col items-center text-center drop-shadow-[5px_5px_0px_#000] hover:scale-105 transition-transform duration-300"
             >
               <div className="animate-bounce-slow">{feature.icon}</div>
               <h3 className="text-lg md:text-xl font-bold mt-4 mb-2 text-gray-900">

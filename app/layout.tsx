@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import { ThemeProvider } from '@/lib/theme-provider';
 import Navbar from '@/components/layout/Navbar';
 import { Toaster } from '@/components/ui/toaster';
-
+import  Head  from 'next/head';
 export const metadata: Metadata = {
   title: 'MemeForge - Blockchain-Based Meme Creation',
   description: 'Create, share, and own your memes on the blockchain with MemeForge',
@@ -16,6 +16,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <Head>
+      <link rel="icon" href="/favicon.ico" sizes="any" />
+      </Head>
       <body className="font-space-comic">
         <ThemeProvider
           attribute="class"
