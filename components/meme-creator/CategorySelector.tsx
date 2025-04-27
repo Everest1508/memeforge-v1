@@ -35,7 +35,7 @@ const CategorySelector = ({
               : "bg-white text-gray-700"
           )}
         >
-          <span className="mr-2">{category.icon}</span>
+          {/* <span className="mr-2">{category.icon}</span> */}
           {category.name}
         </button>
       ))}
