@@ -1,6 +1,13 @@
 import NextAuth, { Session } from "next-auth";
 import TwitterProvider from "next-auth/providers/twitter";
 
+// Extend the NextAuth User type to include id_str
+declare module "next-auth" {
+  interface User {
+    id_str?: string;
+  }
+}
+
 export const handler = NextAuth({
   providers: [
     TwitterProvider({
@@ -10,26 +17,25 @@ export const handler = NextAuth({
   ],
   callbacks: {
     async signIn({ user }) {
-      // Add the Twitter ID (id_str) to the user object
-      user.id = user.id_str || "";  // Provide a fallback value if id_str is undefined
+      user.id = user.id_str || ""; 
 
-      // Sync user data with Django backend here
-      const response = await fetch("http://your-django-backend/api/users/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: user.email,
-          name: user.name,
-          twitterId: user.id, // Use the user.id (which is mapped to id_str)
-        }),
-      });
+      // const response = await fetch("http://your-django-backend/api/users/", {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      //   body: JSON.stringify({
+      //     email: user.email,
+      //     name: user.name,
+      //     twitterId: user.id, // Use the user.id (which is mapped to id_str)
+      //   }),
+      // });
 
-      if (response.ok) {
-        return true;
-      }
-      return false;
+      // if (response.ok) {
+      //   return true;
+      // }
+      // return false;
+      return true; // Allow sign-in for now
     },
     async session({ session, token }: { session: Session, token: any }) {
       if (session.user) {
