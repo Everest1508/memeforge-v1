@@ -18,7 +18,7 @@ export default function LoginPage() {
     // User is logged in
     return (
       <div className="flex flex-col justify-center items-center h-screen">
-        <h2 className="text-2xl font-bold">Welcome, {session.user?.name}</h2>
+        <h2 className="text-2xl font-bold font-[Melon]">Welcome, {session.user?.name}</h2>
         <p className="text-lg">Email: {session.user?.email}</p>
         <img src={session.user?.image || "/default-avatar.png"} alt="User Avatar" className="w-20 h-20 rounded-full mt-4" />
         <button

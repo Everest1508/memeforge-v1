@@ -1,8 +1,14 @@
 import { useRef, useState, useEffect } from "react";
 import { Sticker, Template, TextElement } from "@/types";
 import { Canvas, Image as FabricImage, Text as FabricText } from "fabric";
-import { Download, MoveHorizontal, MoveVertical, Upload } from "lucide-react";
+import { Download, MoveHorizontal, MoveVertical, SendIcon, Share, Share2, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import axios from "axios";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'; // Make sure you import the CSS
+import { signIn, useSession } from "next-auth/react";
+import { Session } from "node:inspector";
+
 
 interface MemeCanvasProps {
   selectedStickers: Sticker[];
@@ -26,6 +32,8 @@ const MemeCanvas = ({ selectedStickers, onRemoveSticker, selectedTemplate, selec
   const [canvasHeight, setCanvasHeight] = useState(600);
   const [uploadedTemplate, setUploadedTemplate] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [modalIsOpen, setModalIsOpen] = useState(true);
+  const { data: session } = useSession();
   
   useEffect(() => {
     if (canvasRef.current) {
@@ -265,12 +273,75 @@ const MemeCanvas = ({ selectedStickers, onRemoveSticker, selectedTemplate, selec
     }
   };
 
+
+
+  const handleSubmit = async () => {
+    if (!fabricCanvasRef.current) return;
+  
+    const canvas = fabricCanvasRef.current;
+    const dataURL = canvas.toDataURL({
+      format: "png",
+      quality: 1,
+      multiplier: 1,
+    });
+  
+    try {
+      const uploadResponse = await axios.post(
+        "/api/upload-meme",
+        { imageData: dataURL },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+  
+      console.log("Meme uploaded successfully!", uploadResponse.data);
+  
+      const imageUrl = uploadResponse.data.url;
+  
+      const session = await axios.get("/api/auth/session");
+      const email = session.data?.user?.email || "anonymous@memeforge.lol";
+  
+
+      const submissionResponse = await axios.post(
+        "https://memeforge.mooo.com/submissions/",
+        {
+          vercel_blob_url: imageUrl,
+          email: email,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+  
+      // Show a success toast with the response message from Memeforge API
+      toast.success(`${submissionResponse.data.message || ''}`);
+    } catch (error) {
+      console.error("Failed during meme submission", error);
+      // Show an error toast
+      toast.error("Failed to upload or submit meme. Please try again.");
+    }
+  };
+
+  
+  
+
   return (
     <div className="flex flex-col h-full">
       <div className="bg-white p-4 shadow-sm mb-4 rounded-lg">
         <div className="flex justify-between items-center">
-          <h2 className="text-xl font-bold text-gray-800">Canvas</h2>
+          <h2 className="text-xl font-bold text-gray-800 hidden md:block">Canvas</h2>
           <div className="flex space-x-2">
+          <Button
+              size="sm"
+              className="flex items-center gap-2 bg-red-600 hover:bg-red-700 drop-shadow-[2px_2px_0px_#000] border border-black"
+              onClick={handleSubmit}
+            ><SendIcon className="h-4 w-4" />
+              <span>Submit</span>
+            </Button>
             <input
               type="file"
               accept="image/*"
@@ -346,6 +417,35 @@ const MemeCanvas = ({ selectedStickers, onRemoveSticker, selectedTemplate, selec
           className="border-2 border-dashed border-gray-300 rounded-lg mx-auto"
         />
       </div>
+      {modalIsOpen && !session?.user && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white p-6 rounded-lg w-80 text-center">
+            <h3 className="text-xl font-semibold">Please log in to submit your meme</h3>
+            <p className="mt-4">You need to be logged in to submit a meme.</p>
+            <div className="mt-6 flex justify-center gap-2">
+              <Button onClick={()=>signIn('twitter')} className="bg-blue-600 hover:bg-blue-700">
+                Login
+              </Button>
+              <Button onClick={()=>setModalIsOpen(false)} className="bg-gray-500 hover:bg-gray-600">
+                Close
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+        style={{ zIndex: 9999 }} // Ensure the toast is above other elements  
+      />
     </div>
   );
 };

@@ -5,8 +5,7 @@ import { Sticker, Template, TextElement } from '@/types';
 import MemeCanvas from '@/components/meme-creator/MemeCanvas';
 import Toolbar from '@/components/meme-creator/Toolbar';
 import TemplateSelector from '@/components/meme-creator/TemplateSelector';
-import Layers from '@/components/meme-creator/Layers';  // <-- Import Layers component
-import { motion } from 'framer-motion';
+import Layers from '@/components/meme-creator/Layers'; 
 
 
 

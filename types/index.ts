@@ -53,3 +53,10 @@ export interface TextElement {
   borderColor?: string; 
   fontWeight?: string;
 }
+
+
+interface SubmissionData {
+  vercel_blob_url: string;
+  email: string;
+  x_post_url: string;
+}
