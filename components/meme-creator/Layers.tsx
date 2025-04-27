@@ -60,7 +60,7 @@ export default function Layers({
                   className="text-red-500 hover:text-red-700"
                   onClick={() => onRemoveSticker(sticker.id)}
                 >
-                  Remove
+                  <img src="/iconx/x-icon.jpg" alt="Remove" className="w-6 h-6 rounded-full drop-shadow-[2px_2px_0px_#000]" />
                 </button>
               </div>
             ))            
@@ -95,7 +95,7 @@ export default function Layers({
                   className="text-red-500 hover:text-red-700"
                   onClick={() => onRemoveText(text.id)}
                 >
-                  Remove
+                 <img src="/iconx/x-icon.jpg" alt="Remove" className="w-6 h-6 rounded-full drop-shadow-[2px_2px_0px_#000]" />
                 </button>
               </div>
             ))
