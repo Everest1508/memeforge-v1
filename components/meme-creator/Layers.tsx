@@ -53,9 +53,9 @@ export default function Layers({
           {selectedStickers.length === 0 ? (
             <p className="text-gray-400">No stickers added.</p>
           ) : (
-            selectedStickers.map(sticker => (
+            selectedStickers.map((sticker, index) => (
               <div key={sticker.id} className="flex justify-between items-center mb-2 max-h-8 h-8 overflow-y-auto">
-                <span>{sticker.name}</span>
+                <span>Layer {index + 1}</span>
                 <button
                   className="text-red-500 hover:text-red-700"
                   onClick={() => onRemoveSticker(sticker.id)}
@@ -63,7 +63,7 @@ export default function Layers({
                   Remove
                 </button>
               </div>
-            ))
+            ))            
           )}
         </div>
       )}
@@ -88,17 +88,17 @@ export default function Layers({
           {selectedTexts.length === 0 ? (
             <p className="text-gray-400">No text added.</p>
           ) : (
-            selectedStickers.map((sticker, index) => (
-              <div key={sticker.id} className="flex justify-between items-center mb-2 max-h-8 h-8 overflow-y-auto">
-                <span>Layer {index + 1}</span>
+            selectedTexts.map(text => (
+              <div key={text.id} className="flex justify-between items-center mb-2">
+                <span>{text.text}</span>
                 <button
                   className="text-red-500 hover:text-red-700"
-                  onClick={() => onRemoveSticker(sticker.id)}
+                  onClick={() => onRemoveText(text.id)}
                 >
                   Remove
                 </button>
               </div>
-            ))            
+            ))
           )}
         </div>
       )}
