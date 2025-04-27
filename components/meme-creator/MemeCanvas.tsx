@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect } from "react";
 import { Sticker, Template, TextElement } from "@/types";
 import { Canvas, Image as FabricImage, Text as FabricText } from "fabric";
-import { Download, MoveHorizontal, MoveVertical } from "lucide-react";
+import { Download, MoveHorizontal, MoveVertical, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface MemeCanvasProps {
@@ -24,7 +24,9 @@ const MemeCanvas = ({ selectedStickers, onRemoveSticker, selectedTemplate, selec
   const fabricCanvasRef = useRef<Canvas | null>(null);
   const [canvasWidth, setCanvasWidth] = useState(600);
   const [canvasHeight, setCanvasHeight] = useState(600);
-
+  const [uploadedTemplate, setUploadedTemplate] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  
   useEffect(() => {
     if (canvasRef.current) {
       fabricCanvasRef.current = new Canvas(canvasRef.current, {
@@ -46,44 +48,43 @@ const MemeCanvas = ({ selectedStickers, onRemoveSticker, selectedTemplate, selec
     const existingTexts = canvas.getObjects()
       .filter(obj => obj.type === "text" && (obj as any).customType === "addedText") as ExtendedFabricText[];
   
-    // Update existing or add new
     selectedTexts.forEach(textElement => {
       let fabricText = existingTexts.find(t => t.id === textElement.id);
   
       if (fabricText) {
-        // 🔥 Save original position
         const oldLeft = fabricText.left || 100;
         const oldTop = fabricText.top || 100;
   
-        // Update text properties
         fabricText.set({
           text: textElement.text,
           fontSize: textElement.fontSize || 24,
           fill: textElement.color || "black",
           fontFamily: textElement.fontFamily || "Arial",
+          fontWeight: textElement.fontWeight || "normal", // <-- ADD THIS
+          borderColor: textElement.borderColor || "blue", // <-- ADD THIS
         });
+        
   
-        // 🔥 Restore original position exactly
         fabricText.set({
           left: oldLeft,
           top: oldTop,
         });
   
-        fabricText.setCoords(); // Important to refresh internal coordinates
+        fabricText.setCoords();
       } else {
-        // Add new
         const newText = new FabricText(textElement.text, {
           left: textElement.left || 100,
           top: textElement.top || 100,
           fontSize: textElement.fontSize || 24,
           fill: textElement.color || "black",
           fontFamily: textElement.fontFamily || "Arial",
+          fontWeight: textElement.fontWeight || "normal", // <-- ADD THIS
           selectable: true,
           hasControls: true,
           lockScalingFlip: true,
           lockRotation: false,
           hasBorders: true,
-          borderColor: "blue",
+          borderColor: textElement.borderColor || "blue", // <-- ADD THIS
           cornerColor: "blue",
           cornerSize: 8,
           transparentCorners: false,
@@ -94,7 +95,6 @@ const MemeCanvas = ({ selectedStickers, onRemoveSticker, selectedTemplate, selec
       }
     });
   
-    // Remove texts not in selectedTexts
     existingTexts.forEach(textObj => {
       if (!selectedTexts.find(t => t.id === textObj.id)) {
         canvas.remove(textObj);
@@ -106,110 +106,65 @@ const MemeCanvas = ({ selectedStickers, onRemoveSticker, selectedTemplate, selec
   
 
   useEffect(() => {
-    if (selectedTemplate && fabricCanvasRef.current) {
-      const canvas = fabricCanvasRef.current;
+    const canvas = fabricCanvasRef.current;
+    if (!canvas) return;
+  
+    const loadTemplate = async (url: string) => {
+      const img = await FabricImage.fromURL(url, { crossOrigin: "anonymous" });
+  
+      const screenWidth = window.innerWidth;
+      const isMobile = screenWidth < 640;
+      const maxWidth = isMobile ? screenWidth - 40 : 900;
+      const maxHeight = isMobile ? window.innerHeight * 0.6 : 700;
+  
+      const aspectRatio = img.width! / img.height!;
+      let newWidth = img.width!;
+      let newHeight = img.height!;
+  
+      if (newWidth > maxWidth) {
+        newWidth = maxWidth;
+        newHeight = maxWidth / aspectRatio;
+      }
+      if (newHeight > maxHeight) {
+        newHeight = maxHeight;
+        newWidth = maxHeight * aspectRatio;
+      }
+  
+      setCanvasWidth(newWidth);
+      setCanvasHeight(newHeight);
+      canvas.setWidth(newWidth);
+      canvas.setHeight(newHeight);
+  
+      img.scaleToWidth(newWidth);
+      img.scaleToHeight(newHeight);
+  
+      img.set({
+        selectable: false,
+        evented: false,
+        hasControls: false,
+        hasBorders: false,
+        lockMovementX: true,
+        lockMovementY: true,
+        lockRotation: true,
+        lockScalingX: true,
+        lockScalingY: true,
+        hoverCursor: "default",
+      });
+  
       canvas.clear();
-
-      FabricImage.fromURL("https://memeforge.mooo.com" + selectedTemplate.url, {
-        crossOrigin: "anonymous",
-      }).then((img: FabricImage) => {
-        const screenWidth = window.innerWidth;
-        const isMobile = screenWidth < 640;
-        const maxWidth = isMobile ? screenWidth - 40 : 900;
-        const maxHeight = isMobile ? window.innerHeight * 0.6 : 700;
-
-        const aspectRatio = img.width! / img.height!;
-        let newWidth = img.width!;
-        let newHeight = img.height!;
-
-        if (newWidth > maxWidth) {
-          newWidth = maxWidth;
-          newHeight = maxWidth / aspectRatio;
-        }
-        if (newHeight > maxHeight) {
-          newHeight = maxHeight;
-          newWidth = maxHeight * aspectRatio;
-        }
-
-        setCanvasWidth(newWidth);
-        setCanvasHeight(newHeight);
-        canvas.setWidth(newWidth);
-        canvas.setHeight(newHeight);
-
-        img.set({
-          scaleX: newWidth / img.width!,
-          scaleY: newHeight / img.height!,
-          selectable: false,
-          evented: false,
-          hasControls: false,
-          hasBorders: false,
-          lockMovementX: true,
-          lockMovementY: true,
-          lockRotation: true,
-          lockScalingX: true,
-          lockScalingY: true,
-          hoverCursor: "default",
-        });
-
-        canvas.add(img);
-        canvas.sendObjectToBack(img);
-        canvas.renderAll();
-      });
+      canvas.add(img);
+      canvas.sendObjectToBack(img);
+      canvas.renderAll();
+    };
+  
+    if (selectedTemplate) {
+      setUploadedTemplate(null); // reset uploadedTemplate if template selected
+      loadTemplate("https://memeforge.mooo.com" + selectedTemplate.url);
+    } else if (uploadedTemplate) {
+      loadTemplate(uploadedTemplate);
     }
-  }, [selectedTemplate]);
-
-  useEffect(() => {
-    if (fabricCanvasRef.current) {
-      const canvas = fabricCanvasRef.current;
-      const currentStickers = canvas.getObjects()
-        .filter(obj => obj instanceof FabricImage && (obj as ExtendedFabricImage).id) as ExtendedFabricImage[];
-
-      currentStickers.forEach(sticker => {
-        if (!selectedStickers.some(s => s.id === sticker.id)) {
-          canvas.remove(sticker);
-        }
-      });
-
-      selectedStickers.forEach(sticker => {
-        if (!currentStickers.some(s => s.id === sticker.id)) {
-          FabricImage.fromURL(sticker.url, {
-            crossOrigin: "anonymous",
-          }).then((img: ExtendedFabricImage) => {
-            const maxStickerSize = Math.min(canvasWidth, canvasHeight) * 0.2;
-            const aspectRatio = img.width! / img.height!;
-
-            let width = maxStickerSize;
-            let height = maxStickerSize / aspectRatio;
-
-            if (height > maxStickerSize) {
-              height = maxStickerSize;
-              width = maxStickerSize * aspectRatio;
-            }
-
-            img.set({
-              left: canvasWidth * 0.1,
-              top: canvasHeight * 0.1,
-              scaleX: width / img.width!,
-              scaleY: height / img.height!,
-              id: sticker.id,
-              selectable: true,
-              hasControls: true,
-              lockScalingFlip: true,
-              lockRotation: false,
-              hasBorders: true,
-              borderColor: "blue",
-              cornerColor: "blue",
-              cornerSize: 8,
-              transparentCorners: false,
-            });
-
-            canvas.add(img);
-            canvas.renderAll();
-          });
-        }
-      });
-    }
-  }, [selectedStickers, onRemoveSticker, canvasWidth, canvasHeight]);
+  }, [selectedTemplate, uploadedTemplate]);
+  
 
   const handleDownload = () => {
     if (fabricCanvasRef.current) {
@@ -245,12 +200,39 @@ const MemeCanvas = ({ selectedStickers, onRemoveSticker, selectedTemplate, selec
     }
   };
 
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setUploadedTemplate(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   return (
     <div className="flex flex-col h-full">
       <div className="bg-white p-4 shadow-sm mb-4 rounded-lg">
         <div className="flex justify-between items-center">
           <h2 className="text-xl font-bold text-gray-800">Canvas</h2>
           <div className="flex space-x-2">
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleFileUpload}
+              ref={fileInputRef}
+              style={{ display: 'none' }}
+            />
+            <Button
+              size="sm"
+              className="flex items-center gap-2 bg-red-600 hover:bg-red-700 drop-shadow-[2px_2px_0px_#000] border border-black"
+              onClick={() => fileInputRef.current?.click()} // 👈 Trigger file input click
+            >
+              <Upload className="h-4 w-4" />
+              <span>Upload</span>
+            </Button>
+
             <Button
               size="sm"
               className="flex items-center gap-2 bg-red-600 hover:bg-red-700 drop-shadow-[2px_2px_0px_#000] border border-black"
@@ -262,7 +244,6 @@ const MemeCanvas = ({ selectedStickers, onRemoveSticker, selectedTemplate, selec
           </div>
         </div>
       </div>
-
       <div className="flex w-full gap-4 mb-4 overflow-x-auto px-4 md:justify-center p-2">
         {!selectedTemplate && (
           <>
