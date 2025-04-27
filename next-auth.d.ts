@@ -14,8 +14,7 @@ declare module "next-auth" {
   }
 
   interface User {
-    id: string; // Add the 'id' field here too
-    id_str?: string; 
+    id: string; 
     name?: string | null;
     email?: string | null;
     image?: string | null;
