@@ -98,3 +98,12 @@ body{
 body {
   font-family: 'SpaceComic', sans-serif;
 }
+
+/* globals.css */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}

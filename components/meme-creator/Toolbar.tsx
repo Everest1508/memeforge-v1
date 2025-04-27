@@ -24,7 +24,7 @@ const CategorySkeleton = () => (
 );
 
 const SkeletonGrid = () => (
-  <div className="h-98 p-3 rounded-lg border border-gray-200 overflow-y-auto">
+  <div className="h-98 p-3 rounded-lg border border-black overflow-y-auto">
   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
     {Array.from({ length: 8 }).map((_, idx) => (
       <div
@@ -79,7 +79,7 @@ const Toolbar = ({ onSelectSticker }: ToolbarProps) => {
             selectedCategory={selectedCategory}
             onSelectCategory={setSelectedCategory}
           />
-          <div className="max-h-[320px] overflow-y-auto mt-4">
+          <div className="mt-4 drop-shadow-[2px_2px_0px_#000] scrollbar-hide">
             <StickerPanel
               categoryId={selectedCategory}
               onSelectSticker={onSelectSticker}

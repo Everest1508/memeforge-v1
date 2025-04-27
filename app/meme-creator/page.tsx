@@ -63,7 +63,9 @@ export default function MemeCreatorPage() {
         <div className="lg:order-2 lg:col-span-1">
           <Toolbar onSelectSticker={handleSelectSticker} />
           
+          
           {/* Add Layers component below Toolbar */}
+          <div className='px-4' >
           <Layers 
             selectedStickers={selectedStickers} 
             onRemoveSticker={handleRemoveSticker}
@@ -71,6 +73,7 @@ export default function MemeCreatorPage() {
             onAddText={handleAddText}
             onRemoveText={handleRemoveText}
           />
+          </div>
 
         </div>
       </div>

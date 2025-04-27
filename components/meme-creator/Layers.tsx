@@ -30,17 +30,17 @@ export default function Layers({
   };
 
   return (
-    <div className="bg-white p-4 rounded-2xl shadow-md">
+    <div className="max-h-60 overflow-y-auto bg-white border border-black p-4 rounded-2xl drop-shadow-[2px_2px_0px_#000]">
       {/* Tabs */}
-      <div className="flex border-b mb-4">
+      <div className="flex border-b mb-4 sticky top-0 bg-white z-10 border border-black drop-shadow-[2px_2px_0px_#000]">
         <button
-          className={`px-4 py-2 font-bold ${activeTab === 'layers' ? 'border-b-2 border-red-500' : 'text-gray-500'}`}
+          className={`px-4 py-2 font-bold ${activeTab === 'layers' ? 'text-black' : 'text-gray-500'}`}
           onClick={() => setActiveTab('layers')}
         >
           Layers
         </button>
         <button
-          className={`px-4 py-2 font-bold ${activeTab === 'text' ? 'border-b-2 border-red-500' : 'text-gray-500'}`}
+          className={`px-4 py-2 font-bold ${activeTab === 'text' ? 'text-black' : 'text-gray-500'}`}
           onClick={() => setActiveTab('text')}
         >
           Text
@@ -49,7 +49,7 @@ export default function Layers({
 
       {/* Tab Content */}
       {activeTab === 'layers' && (
-        <div className="">
+        <div className=''>
           {selectedStickers.length === 0 ? (
             <p className="text-gray-400">No stickers added.</p>
           ) : (

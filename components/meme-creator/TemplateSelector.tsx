@@ -36,9 +36,9 @@ const TemplateSelector = ({ onSelectTemplate }: TemplateSelectorProps) => {
   }, []);
 
   return (
-    <div className="bg-white rounded-lg drop-shadow-[2px_2px_0px_#000] p-4 mt-6">
+    <div className="bg-white rounded-lg  p-4 mt-6 h-96 overflow-y-auto scrollbar-hide">
       <h2 className="text-xl font-bold text-gray-800 mb-4">Templates</h2>
-      <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 ">
         {loading
           ? Array.from({ length: 6 }).map((_, index) => (
               <SkeletonCard key={index} />
