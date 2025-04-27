@@ -13,5 +13,4 @@ export const authOptions = {
   ],
 };
 
-// ❗ export default function, not GET or POST
 export default NextAuth(authOptions);
