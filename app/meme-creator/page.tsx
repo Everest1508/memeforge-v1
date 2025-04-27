@@ -41,7 +41,7 @@ export default function MemeCreatorPage() {
   };
 
   return (
-    <div className="mx-auto md:px-24 py-12 px-4 font-[Inter] pt-28 min-h-screen">
+    <div className="mx-auto md:px-24 py-12 px-4 font-[Melon] pt-28 min-h-screen">
 
       <div className="mb-8 mt-4">
         <h1 className="text-3xl md:text-4xl font-bold text-[#EF4444] drop-shadow-[2px_2px_0px_#000] font-[SpaceComic]">Meme Lab</h1>

@@ -95,6 +95,14 @@ body{
   font-style: normal;
 }
 
+@font-face {
+  font-family: 'Melon';
+  src: url('/font/melon.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+
 body {
   font-family: 'SpaceComic', sans-serif;
 }
