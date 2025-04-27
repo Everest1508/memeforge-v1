@@ -26,8 +26,8 @@ const CategorySelector = ({
           onMouseEnter={() => setHoveredCategory(category.slug)}
           onMouseLeave={() => setHoveredCategory(null)}
           className={cn(
-            "px-4 py-2 rounded-full text-sm font-medium transition-all duration-200",
-            "border border-red-200 hover:border-red-400",
+            "px-4 py-2 rounded-lg drop-shadow-[2px_2px_0px_#000] text-sm font-medium transition-all duration-200",
+            "border border-black hover:border-black",
             selectedCategory === category.slug
               ? "bg-red-600 text-white"
               : hoveredCategory === category.slug
