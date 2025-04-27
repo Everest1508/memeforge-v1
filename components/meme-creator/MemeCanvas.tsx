@@ -106,6 +106,60 @@ const MemeCanvas = ({ selectedStickers, onRemoveSticker, selectedTemplate, selec
   
 
   useEffect(() => {
+    if (fabricCanvasRef.current) {
+      const canvas = fabricCanvasRef.current;
+      const currentStickers = canvas
+        .getObjects()
+        .filter((obj) => obj instanceof FabricImage && (obj as ExtendedFabricImage).id) as ExtendedFabricImage[];
+
+      currentStickers.forEach((sticker) => {
+        if (!selectedStickers.some((s) => s.id === sticker.id)) {
+          canvas.remove(sticker);
+        }
+      });
+
+      selectedStickers.forEach((sticker) => {
+        if (!currentStickers.some((s) => s.id === sticker.id)) {
+          FabricImage.fromURL(sticker.url, {
+            crossOrigin: 'anonymous'
+          }).then((img: ExtendedFabricImage) => {
+            const maxStickerSize = Math.min(canvasWidth, canvasHeight) * 0.2;
+            const aspectRatio = img.width! / img.height!;
+            
+            let width = maxStickerSize;
+            let height = maxStickerSize / aspectRatio;
+            
+            if (height > maxStickerSize) {
+              height = maxStickerSize;
+              width = maxStickerSize * aspectRatio;
+            }
+
+            img.set({
+              left: canvasWidth * 0.1,
+              top: canvasHeight * 0.1,
+              scaleX: width / img.width!,
+              scaleY: height / img.height!,
+              id: sticker.id,
+              selectable: true,
+              hasControls: true,
+              lockScalingFlip: true,
+              lockRotation: false,
+              hasBorders: true,
+              borderColor: 'blue',
+              cornerColor: 'blue',
+              cornerSize: 8,
+              transparentCorners: false,
+            });
+
+            canvas.add(img);
+            canvas.renderAll();
+          });
+        }
+      });
+    }
+  }, [selectedStickers, onRemoveSticker, canvasWidth, canvasHeight]);
+
+  useEffect(() => {
     const canvas = fabricCanvasRef.current;
     if (!canvas) return;
   
