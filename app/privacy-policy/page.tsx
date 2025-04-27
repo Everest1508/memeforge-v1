@@ -10,7 +10,7 @@ export default function PrivacyPolicyPage() {
   return (
     <div className="max-w-3xl mx-auto p-6 bg-white font-[Inter] pt-28">
       <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold text-red-500 font-[SpaceComic]">Privacy Policy</h1>
+        <h1 className="text-3xl font-bold text-red-500 font-[SpaceComic] drop-shadow-[2px_2px_0px_#000]">Privacy Policy</h1>
         <p className="text-xl text-gray-500">Effective Date: 27-04-2025</p>
       </div>
 
@@ -88,7 +88,7 @@ export default function PrivacyPolicyPage() {
       <div className="text-center">
         <a
           href="/"
-          className="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          className="inline-block px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 drop-shadow-[2px_2px_0px_#000]"
         >
           Close
         </a>
