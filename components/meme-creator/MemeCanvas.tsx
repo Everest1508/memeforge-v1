@@ -278,6 +278,17 @@ const MemeCanvas = ({ selectedStickers, onRemoveSticker, selectedTemplate, selec
   const handleSubmit = async () => {
     if (!fabricCanvasRef.current) return;
   
+    // Check if there's a session (i.e., the user is logged in)
+    const session = await axios.get("/api/auth/session");
+  
+    if (!session.data?.user) {
+      // If no session (user not logged in), show a toast message to log in
+      toast.info("Please log in to submit a meme.");
+      return; // Stop further execution
+    }
+  
+    const email = session.data?.user?.email || "anonymous@memeforge.lol";
+  
     const canvas = fabricCanvasRef.current;
     const dataURL = canvas.toDataURL({
       format: "png",
@@ -286,6 +297,17 @@ const MemeCanvas = ({ selectedStickers, onRemoveSticker, selectedTemplate, selec
     });
   
     try {
+      // Check if the user has already submitted a meme today
+      const checkResponse = await axios.get("https://memeforge.mooo.com/check-submission/", {
+        params: { email: email }
+      });
+  
+      if (checkResponse.data.message === "You have already submitted a meme today.") {
+        toast.info("You have already submitted a meme today.");
+        return; // Stop further execution if the user has already submitted
+      }
+  
+      // If no submission found, proceed with uploading the meme
       const uploadResponse = await axios.post(
         "/api/upload-meme",
         { imageData: dataURL },
@@ -300,10 +322,7 @@ const MemeCanvas = ({ selectedStickers, onRemoveSticker, selectedTemplate, selec
   
       const imageUrl = uploadResponse.data.url;
   
-      const session = await axios.get("/api/auth/session");
-      const email = session.data?.user?.email || "anonymous@memeforge.lol";
-  
-
+      // Proceed with submitting the meme
       const submissionResponse = await axios.post(
         "https://memeforge.mooo.com/submissions/",
         {
@@ -325,7 +344,7 @@ const MemeCanvas = ({ selectedStickers, onRemoveSticker, selectedTemplate, selec
       toast.error("Failed to upload or submit meme. Please try again.");
     }
   };
-
+  
   
   
 
