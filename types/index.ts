@@ -50,4 +50,6 @@ export interface TextElement {
   fontSize?: number;
   color?: string;
   fontFamily?: string;
+  borderColor?: string; 
+  fontWeight?: string;
 }
