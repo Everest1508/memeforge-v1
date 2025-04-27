@@ -9,13 +9,32 @@ export default function Home() {
   return (
     <div className="min-h-screen">
       <Head>
-          <link rel="icon" href="/favicon.ico" />
+        <title>Forge Memes | Create Blockchain Backed Memes</title>
+        <meta name="description" content="Create and share blockchain-powered memes easily with our meme creator platform. Join our creative community today!" />
+        <link rel="icon" href="/favicon.ico" />
+
+        {/* Open Graph tags for better social media preview */}
+        <meta property="og:title" content="Forge Memes | Create Blockchain Backed Memes" />
+        <meta property="og:description" content="Create and share blockchain-powered memes easily with our meme creator platform. Join our creative community today!" />
+        <meta property="og:image" content="/images/background/landing-page.PNG" />
+        <meta property="og:url" content="https://yourwebsite.com/" />
+        <meta property="og:type" content="website" />
+
+        {/* Optional: Twitter Card */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Forge Memes | Create Blockchain Backed Memes" />
+        <meta name="twitter:description" content="Create and share blockchain-powered memes easily with our meme creator platform. Join our creative community today!" />
+        <meta name="twitter:image" content="/images/background/landing-page.PNG" />
       </Head>
+
       {/* Background image wrapper */}
       <div
         className="bg-cover md:bg-center bg-[left_center] min-h-screen flex items-center justify-center w-full"
         style={{ backgroundImage: "url('/images/background/landing-page.PNG')" }}
       >
+        {/* Hidden image for SEO (because background images are not crawled well) */}
+        <img src="/images/background/landing-page.PNG" alt="Create Memes on Blockchain" className="hidden" />
+        
         <HeroSection />
       </div>
 
