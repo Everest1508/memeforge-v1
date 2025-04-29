@@ -1,56 +1,100 @@
+'use client';
 import HeroSection from '@/components/home/HeroSection';
 import FeaturesSection from '@/components/home/FeaturesSection';
-import Head from 'next/head';
-import { Metadata } from 'next';
 import CallToActionSection from '@/components/home/CallToActionSection';
-
-export const metadata: Metadata = {
-  title: "Forge Memes | Create Blockchain Backed Memes",
-  description: "Create and share blockchain-powered memes easily with our meme creator platform. Join our creative community today!",
-  keywords: "blockchain memes, meme creation, NFT memes, meme creator, create memes, blockchain-powered memes",
-  authors: [{ name: "Forge Memes Team" }],
-  openGraph: {
-    title: "Forge Memes | Create Blockchain Backed Memes",
-    description: "Create and share blockchain-powered memes easily with our meme creator platform. Join our creative community today!",
-    url: "https://www.memeforge.lol",
-    images: ["/images/background/landing-page.PNG"],
-    siteName: "Forge Memes",
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Forge Memes | Create Blockchain Backed Memes",
-    description: "Create and share blockchain-powered memes easily with our meme creator platform. Join our creative community today!",
-    images: ["/images/background/landing-page.PNG"],
-  },
-  robots: "index, follow",
-  viewport: "width=device-width, initial-scale=1",
-};
+import Head from 'next/head';
+import { useRef, useState } from 'react';
 
 export default function Home() {
+  const [showIntro, setShowIntro] = useState(true);
+  const [showEnter, setShowEnter] = useState(true);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  const handleEnterClick = () => {
+    setShowEnter(false);
+    if (videoRef.current) {
+      videoRef.current.muted = false;
+      videoRef.current.play().catch(() => {});
+    }
+  };
+
+  const handleSkip = () => {
+    if (videoRef.current) {
+      videoRef.current.pause();
+    }
+    setShowIntro(false);
+  };
+
+  const handleVideoEnd = () => {
+    setShowIntro(false);
+  };
+
   return (
     <div className="min-h-screen">
       <Head>
         <title>Forge Memes | Create Blockchain Backed Memes</title>
         <meta name="description" content="Create and share blockchain-powered memes easily with our meme creator platform. Join our creative community today!" />
         <link rel="icon" href="/favicon.ico" />
-        {/* Open Graph and Twitter metadata */}
       </Head>
 
-      {/* Hero Section */}
-      <div
-        className="bg-cover md:bg-center bg-[left_center] min-h-screen flex items-center justify-center w-full"
-        style={{ backgroundImage: "url('/images/background/landing-page.PNG')" }}
-      >
-        <img src="/images/background/landing-page.PNG" alt="Create Memes on Blockchain" className="hidden" />
-        <HeroSection />
-      </div>
+      {showIntro ? (
+        <div className="fixed top-0 left-0 z-50 w-full h-screen overflow-hidden">
+          {/* Enter screen with loader */}
+          {showEnter && (
+            <div
+              className="absolute inset-0 bg-black flex flex-col items-center justify-center z-20 cursor-pointer"
+              onClick={handleEnterClick}
+            >
+              <img
+                src="/iconx/loader.png"
+                alt="Enter"
+                className="w-32 h-32 object-contain animate-pulse"
+              />
+              <p className="mt-4 text-white text-xl font-semibold">Enter</p>
+            </div>
+          )}
 
-      {/* Features Section */}
-      <FeaturesSection />
+          {/* Skip button (shown only after Enter is clicked) */}
+          {!showEnter && (
+            <button
+              onClick={handleSkip}
+              className="absolute top-4 right-4 z-30 bg-black/60 text-white px-4 py-2 rounded hover:bg-black/80 transition"
+            >
+              Skip
+            </button>
+          )}
 
-      {/* Call to Action Section */}
-      <CallToActionSection />
+          {/* Background video */}
+          <video
+            ref={videoRef}
+            autoPlay={false}
+            muted
+            playsInline
+            onEnded={handleVideoEnd}
+            className="w-full h-full object-cover md:bg-center bg-[left_50%_top]"
+          >
+            <source src="/intro.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+        </div>
+      ) : (
+        <>
+          {/* Hero Section */}
+          <div
+            className="bg-cover md:bg-center bg-[left_center] min-h-screen flex items-center justify-center w-full"
+            style={{ backgroundImage: "url('/images/background/landing-page.PNG')" }}
+          >
+            <img src="/images/background/landing-page.PNG" alt="Create Memes on Blockchain" className="hidden" />
+            <HeroSection />
+          </div>
+
+          {/* Features Section */}
+          <FeaturesSection />
+
+          {/* Call to Action Section */}
+          <CallToActionSection />
+        </>
+      )}
     </div>
   );
 }
