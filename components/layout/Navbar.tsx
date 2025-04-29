@@ -23,7 +23,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="text-white bg-black/60 py-4 fixed top-0 z-50 shadow-md w-full pt-8 font-[SpaceComic]">
+    <nav className="text-white bg-black/60 py-4 fixed top-0 z-50 shadow-md w-full pt-8 font-[SpaceComic] z-40">
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center">
           <Link href="/" className="text-2xl font-bold flex items-center">
@@ -41,6 +41,15 @@ const Navbar = () => {
             </NavLink>
             <NavLink href="/team" active={pathname === "/team"}>
               Team
+            </NavLink>
+            <NavLink href="/marketplace" active={pathname === "/marketplace"}>
+              Marketplace
+            </NavLink>
+            <NavLink href="/mint-pad" active={pathname === "/mint-pad"}>
+              Mintpad
+            </NavLink>
+            <NavLink href="/leaderbaord" active={pathname === "/leaderboard"}>
+              Leaderboard
             </NavLink>
           </div>
 
@@ -99,6 +108,15 @@ const Navbar = () => {
                 </MobileNavLink>
                 <MobileNavLink href="/team" onClick={toggleAvatarMenu}>
                   Team
+                </MobileNavLink>
+                <MobileNavLink href="/marketplace" onClick={toggleAvatarMenu}>
+                  Marketplace
+                </MobileNavLink>
+                <MobileNavLink href="/mint-pad" onClick={toggleAvatarMenu}>
+                  Mintpad
+                </MobileNavLink>
+                <MobileNavLink href="/leaderboard" onClick={toggleAvatarMenu}>
+                  Leaderboard
                 </MobileNavLink>
 
                 {/* Login/Logout for Mobile */}
