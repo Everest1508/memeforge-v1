@@ -95,6 +95,7 @@ const config: Config = {
         'accordion-up': 'accordion-up 0.2s ease-out',
         'fade-in-out': 'fadeInOut 4s ease-in-out',
         'skeleton': 'skeleton 1.5s infinite ease-in-out',
+        'slow-spin': 'spin 3s linear infinite',
       },
     },
   },

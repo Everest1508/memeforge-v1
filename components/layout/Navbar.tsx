@@ -27,7 +27,7 @@ const Navbar = () => {
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center">
           <Link href="/" className="text-2xl font-bold flex items-center">
-            <img src="/images/logo1.png" alt="MemeForge Logo" className="w-10 h-10 mr-2" />
+            <img src="/images/logo1.png" alt="MemeForge Logo" className="w-14 h-14 mr-2 -mt-3" />
             <span>MemeForge</span>
           </Link>
 
@@ -53,40 +53,45 @@ const Navbar = () => {
             </NavLink>
           </div>
 
-          {/* Mobile Avatar Button */}
-          <div
-            className="md:hidden relative w-10 h-10 rounded-full overflow-hidden cursor-pointer"
-            onClick={toggleAvatarMenu}
-          >
-            {session && session.user?.image ? (
-              <img
-                src={session.user.image}
-                alt="User Avatar"
-                className="w-full h-full object-contain rounded-full"
-              />
-            ) : (
-              <img src="/iconx/avatar.png" alt="User Avatar" className="w-full h-full object-contain" />
-            )}
-          </div>
+            {/* Mobile Avatar Button */}
+            <div
+              className="md:hidden flex flex-col items-center space-y-1 cursor-pointer"
+              onClick={toggleAvatarMenu}
+            >
+              <div className="w-10 h-10 rounded-full overflow-hidden">
+                {session && session.user?.image ? (
+                  <img
+                    src={session.user.image}
+                    alt="User Avatar"
+                    className="w-full h-full object-contain rounded-full"
+                  />
+                ) : (
+                  <img src="/iconx/avatar.png" alt="User Avatar" className="w-full h-full object-contain" />
+                )}
+              </div>
+              <span className="text-white text-xs font-[Melon] mt-1">Dashboard</span>
+            </div>
+
 
           {/* Desktop Avatar Button with User Name */}
           <div
-            className="hidden md:flex items-center space-x-2 relative w-10 h-10 rounded-full overflow-hidden cursor-pointer"
+            className="hidden md:flex flex-col items-center space-y-1 relative cursor-pointer"
             onClick={toggleAvatarMenu}
           >
-            {session && session.user?.image ? (
-              <img
-                src={session.user.image}
-                alt="User Avatar"
-                className="w-10 h-10 object-contain rounded-full"
-              />
-            ) : (
-              <img src="/iconx/avatar.png" alt="User Avatar" className="w-10 h-10 object-contain" />
-            )}
-            {session?.user?.name && (
-              <span className="text-white font-medium">{session.user.name}</span> // Display user name next to avatar
-            )}
+            <div className="w-10 h-10 rounded-full overflow-hidden">
+              {session && session.user?.image ? (
+                <img
+                  src={session.user.image}
+                  alt="User Avatar"
+                  className="w-10 h-10 object-contain rounded-full"
+                />
+              ) : (
+                <img src="/iconx/avatar.png" alt="User Avatar" className="w-10 h-10 object-contain" />
+              )}
+            </div>
+            <span className="text-white text-sm font-[Melon]">Dashboard</span>
           </div>
+
         </div>
 
         {/* Avatar Pop-up Menu for Mobile (Menu appears when avatar clicked) */}

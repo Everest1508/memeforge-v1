@@ -442,10 +442,10 @@ const MemeCanvas = ({ selectedStickers, onRemoveSticker, selectedTemplate, selec
             <h3 className="text-xl font-semibold">Please log in to submit your meme</h3>
             <p className="mt-4">You need to be logged in to submit a meme.</p>
             <div className="mt-6 flex justify-center gap-2">
-              <Button onClick={()=>signIn('twitter')} className="bg-blue-600 hover:bg-blue-700">
+              <Button onClick={()=>signIn('twitter')} className="bg-red-500 drop-shadow-[2px_2px_0px_#000] border border-black hover:bg-red-700">
                 Login
               </Button>
-              <Button onClick={()=>setModalIsOpen(false)} className="bg-gray-500 hover:bg-gray-600">
+              <Button onClick={()=>setModalIsOpen(false)} className="bg-white hover:bg-gray-200  text-black border border-black  drop-shadow-[2px_2px_0px_#000]">
                 Close
               </Button>
             </div>
