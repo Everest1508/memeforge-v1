@@ -48,7 +48,14 @@ export default function Home() {
               <img
                 src="/iconx/loader.png"
                 alt="Enter"
-                className="w-32 h-32 object-contain animate-pulse"
+                className="w-32 h-32 object-contain z-10"
+                style={{ animation: 'spin 5s linear infinite' }}
+              />
+                  {/* New Image to be added in the middle of the loader */}
+              <img
+                src="/iconx/parrot.png" // Replace this with the path to your image
+                alt="Middle Image"
+                className="w-32 h-32 object-contain -mt-28 z-20" // Customize size and margin as per your needs
               />
               <p className="mt-4 text-white text-xl font-semibold">Enter</p>
             </div>
