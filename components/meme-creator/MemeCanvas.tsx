@@ -392,7 +392,7 @@ const MemeCanvas = ({ selectedStickers, onRemoveSticker, selectedTemplate, selec
         </div>
       </div>
       <div className="flex w-full gap-4 mb-4 overflow-x-auto px-4 md:justify-center p-2">
-        {!selectedTemplate && (
+        {/* {!selectedTemplate && (
           <>
             <Button
               size="sm"
@@ -430,7 +430,7 @@ const MemeCanvas = ({ selectedStickers, onRemoveSticker, selectedTemplate, selec
               <MoveVertical className="h-4 w-4 rotate-180" /> Expand Height
             </Button>
           </>
-        )}
+        )} */}
       </div>
 
       <div className="overflow-x-auto w-full scrollbar-hide">
