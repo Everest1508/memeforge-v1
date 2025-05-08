@@ -6,6 +6,7 @@ import MemeCanvas from '@/components/meme-creator/MemeCanvas';
 import Toolbar from '@/components/meme-creator/Toolbar';
 import TemplateSelector from '@/components/meme-creator/TemplateSelector';
 import Layers from '@/components/meme-creator/Layers'; 
+import { v4 as uuidv4 } from "uuid"; 
 
 
 
@@ -26,12 +27,13 @@ export default function MemeCreatorPage() {
 
   // Function to handle selecting a sticker (add to the list)
   const handleSelectSticker = (sticker: Sticker) => {
-    setSelectedStickers([...selectedStickers, sticker]);
+    const uniqueSticker = { ...sticker, instanceId: uuidv4() };
+    setSelectedStickers([...selectedStickers, uniqueSticker]);
   };
 
   // Function to handle removing a sticker (remove from the list)
-  const handleRemoveSticker = (stickerId: string) => {
-    setSelectedStickers(selectedStickers.filter(s => s.id !== stickerId));
+  const handleRemoveSticker = (instanceId: string) => {
+    setSelectedStickers(selectedStickers.filter((s) => s.instanceId !== instanceId));
   };
 
   // Function to handle selecting a template

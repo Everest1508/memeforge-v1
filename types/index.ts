@@ -3,6 +3,7 @@ export interface Sticker {
   url: string;
   name: string;
   categoryId: string;
+  instanceId: string;
 }
 
 export interface StickerCategory {
