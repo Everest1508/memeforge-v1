@@ -70,7 +70,7 @@ export default function Layers({
                   <span>Layer {index + 1}</span>
                   <button
                     className="text-red-500 hover:text-red-700"
-                    onClick={() => onRemoveSticker(sticker.id)}
+                    onClick={() => onRemoveSticker(sticker.instanceId)}
                   >
                     <img src="/iconx/x-icon.jpg" alt="Remove" className="w-6 h-6 rounded-full drop-shadow-[2px_2px_0px_#000]" />
                   </button>

@@ -34,7 +34,7 @@ const MemeCanvas = ({ selectedStickers, onRemoveSticker, selectedTemplate, selec
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [modalIsOpen, setModalIsOpen] = useState(true);
   const { data: session } = useSession();
-  
+
   useEffect(() => {
     if (canvasRef.current) {
       fabricCanvasRef.current = new Canvas(canvasRef.current, {
@@ -52,17 +52,17 @@ const MemeCanvas = ({ selectedStickers, onRemoveSticker, selectedTemplate, selec
   useEffect(() => {
     if (!fabricCanvasRef.current) return;
     const canvas = fabricCanvasRef.current;
-  
+
     const existingTexts = canvas.getObjects()
       .filter(obj => obj.type === "text" && (obj as any).customType === "addedText") as ExtendedFabricText[];
-  
+
     selectedTexts.forEach(textElement => {
       let fabricText = existingTexts.find(t => t.id === textElement.id);
-  
+
       if (fabricText) {
         const oldLeft = fabricText.left || 100;
         const oldTop = fabricText.top || 100;
-  
+
         fabricText.set({
           text: textElement.text,
           fontSize: textElement.fontSize || 24,
@@ -71,13 +71,13 @@ const MemeCanvas = ({ selectedStickers, onRemoveSticker, selectedTemplate, selec
           fontWeight: textElement.fontWeight || "normal", // <-- ADD THIS
           borderColor: textElement.borderColor || "blue", // <-- ADD THIS
         });
-        
-  
+
+
         fabricText.set({
           left: oldLeft,
           top: oldTop,
         });
-  
+
         fabricText.setCoords();
       } else {
         const newText = new FabricText(textElement.text, {
@@ -102,41 +102,43 @@ const MemeCanvas = ({ selectedStickers, onRemoveSticker, selectedTemplate, selec
         canvas.add(newText);
       }
     });
-  
+
     existingTexts.forEach(textObj => {
       if (!selectedTexts.find(t => t.id === textObj.id)) {
         canvas.remove(textObj);
       }
     });
-  
+
     canvas.renderAll();
   }, [selectedTexts, canvasWidth, canvasHeight]);
-  
 
   useEffect(() => {
     if (fabricCanvasRef.current) {
       const canvas = fabricCanvasRef.current;
+      // Get all existing stickers on the canvas
       const currentStickers = canvas
         .getObjects()
         .filter((obj) => obj instanceof FabricImage && (obj as ExtendedFabricImage).id) as ExtendedFabricImage[];
 
+      // Remove stickers that are no longer in the selectedStickers array
       currentStickers.forEach((sticker) => {
-        if (!selectedStickers.some((s) => s.id === sticker.id)) {
+        if (!selectedStickers.some((s) => s.instanceId === sticker.id)) {
           canvas.remove(sticker);
         }
       });
 
+      // Add new stickers to the canvas
       selectedStickers.forEach((sticker) => {
-        if (!currentStickers.some((s) => s.id === sticker.id)) {
-          FabricImage.fromURL(sticker.url, {
-            crossOrigin: 'anonymous'
+        if (!currentStickers.some((s) => s.id === sticker.instanceId)) {
+          FabricImage.fromURL(sticker.url.replace('http://', 'https://'), {
+            crossOrigin: 'anonymous',
           }).then((img: ExtendedFabricImage) => {
             const maxStickerSize = Math.min(canvasWidth, canvasHeight) * 0.2;
             const aspectRatio = img.width! / img.height!;
-            
+
             let width = maxStickerSize;
             let height = maxStickerSize / aspectRatio;
-            
+
             if (height > maxStickerSize) {
               height = maxStickerSize;
               width = maxStickerSize * aspectRatio;
@@ -147,7 +149,7 @@ const MemeCanvas = ({ selectedStickers, onRemoveSticker, selectedTemplate, selec
               top: canvasHeight * 0.1,
               scaleX: width / img.width!,
               scaleY: height / img.height!,
-              id: sticker.id,
+              id: sticker.instanceId, // Use unique instanceId for each sticker
               selectable: true,
               hasControls: true,
               lockScalingFlip: true,
@@ -165,24 +167,25 @@ const MemeCanvas = ({ selectedStickers, onRemoveSticker, selectedTemplate, selec
         }
       });
     }
-  }, [selectedStickers, onRemoveSticker, canvasWidth, canvasHeight]);
+  }, [selectedStickers, canvasWidth, canvasHeight]);
+
 
   useEffect(() => {
     const canvas = fabricCanvasRef.current;
     if (!canvas) return;
-  
+
     const loadTemplate = async (url: string) => {
       const img = await FabricImage.fromURL(url, { crossOrigin: "anonymous" });
-  
+
       const screenWidth = window.innerWidth;
       const isMobile = screenWidth < 640;
       const maxWidth = isMobile ? screenWidth - 40 : 900;
       const maxHeight = isMobile ? window.innerHeight * 0.6 : 700;
-  
+
       const aspectRatio = img.width! / img.height!;
       let newWidth = img.width!;
       let newHeight = img.height!;
-  
+
       if (newWidth > maxWidth) {
         newWidth = maxWidth;
         newHeight = maxWidth / aspectRatio;
@@ -191,15 +194,15 @@ const MemeCanvas = ({ selectedStickers, onRemoveSticker, selectedTemplate, selec
         newHeight = maxHeight;
         newWidth = maxHeight * aspectRatio;
       }
-  
+
       setCanvasWidth(newWidth);
       setCanvasHeight(newHeight);
       canvas.setWidth(newWidth);
       canvas.setHeight(newHeight);
-  
+
       img.scaleToWidth(newWidth);
       img.scaleToHeight(newHeight);
-  
+
       img.set({
         selectable: false,
         evented: false,
@@ -212,13 +215,13 @@ const MemeCanvas = ({ selectedStickers, onRemoveSticker, selectedTemplate, selec
         lockScalingY: true,
         hoverCursor: "default",
       });
-  
+
       canvas.clear();
       canvas.add(img);
       canvas.sendObjectToBack(img);
       canvas.renderAll();
     };
-  
+
     if (selectedTemplate) {
       setUploadedTemplate(null); // reset uploadedTemplate if template selected
       loadTemplate("https://memeforge.mooo.com" + selectedTemplate.url);
@@ -226,7 +229,7 @@ const MemeCanvas = ({ selectedStickers, onRemoveSticker, selectedTemplate, selec
       loadTemplate(uploadedTemplate);
     }
   }, [selectedTemplate, uploadedTemplate]);
-  
+
 
   const handleDownload = () => {
     if (fabricCanvasRef.current) {
@@ -277,36 +280,36 @@ const MemeCanvas = ({ selectedStickers, onRemoveSticker, selectedTemplate, selec
 
   const handleSubmit = async () => {
     if (!fabricCanvasRef.current) return;
-  
+
     // Check if there's a session (i.e., the user is logged in)
     const session = await axios.get("/api/auth/session");
-  
+
     if (!session.data?.user) {
       // If no session (user not logged in), show a toast message to log in
       toast.info("Please log in to submit a meme.");
       return; // Stop further execution
     }
-  
+
     const email = session.data?.user?.email || "anonymous@memeforge.lol";
-  
+
     const canvas = fabricCanvasRef.current;
     const dataURL = canvas.toDataURL({
       format: "png",
       quality: 1,
       multiplier: 1,
     });
-  
+
     try {
       // Check if the user has already submitted a meme today
       const checkResponse = await axios.get("https://memeforge.mooo.com/check-submission/", {
         params: { email: email }
       });
-  
+
       if (checkResponse.data.message === "You have already submitted a meme today.") {
         toast.info("You have already submitted a meme today.");
         return; // Stop further execution if the user has already submitted
       }
-  
+
       // If no submission found, proceed with uploading the meme
       const uploadResponse = await axios.post(
         "/api/upload-meme",
@@ -317,11 +320,11 @@ const MemeCanvas = ({ selectedStickers, onRemoveSticker, selectedTemplate, selec
           },
         }
       );
-  
+
       console.log("Meme uploaded successfully!", uploadResponse.data);
-  
+
       const imageUrl = uploadResponse.data.url;
-  
+
       // Proceed with submitting the meme
       const submissionResponse = await axios.post(
         "https://memeforge.mooo.com/submissions/",
@@ -335,7 +338,7 @@ const MemeCanvas = ({ selectedStickers, onRemoveSticker, selectedTemplate, selec
           },
         }
       );
-  
+
       // Show a success toast with the response message from Memeforge API
       toast.success(`${submissionResponse.data.message || ''}`);
     } catch (error) {
@@ -344,9 +347,9 @@ const MemeCanvas = ({ selectedStickers, onRemoveSticker, selectedTemplate, selec
       toast.error("Failed to upload or submit meme. Please try again.");
     }
   };
-  
-  
-  
+
+
+
 
   return (
     <div className="flex flex-col h-full">
@@ -354,7 +357,7 @@ const MemeCanvas = ({ selectedStickers, onRemoveSticker, selectedTemplate, selec
         <div className="flex justify-between items-center">
           <h2 className="text-xl font-bold text-gray-800 hidden md:block">Canvas</h2>
           <div className="flex space-x-2">
-          <Button
+            <Button
               size="sm"
               className="flex items-center gap-2 bg-red-600 hover:bg-red-700 drop-shadow-[2px_2px_0px_#000] border border-black"
               onClick={handleSubmit}
@@ -389,7 +392,7 @@ const MemeCanvas = ({ selectedStickers, onRemoveSticker, selectedTemplate, selec
         </div>
       </div>
       <div className="flex w-full gap-4 mb-4 overflow-x-auto px-4 md:justify-center p-2">
-        {!selectedTemplate && (
+        {/* {!selectedTemplate && (
           <>
             <Button
               size="sm"
@@ -427,7 +430,7 @@ const MemeCanvas = ({ selectedStickers, onRemoveSticker, selectedTemplate, selec
               <MoveVertical className="h-4 w-4 rotate-180" /> Expand Height
             </Button>
           </>
-        )}
+        )} */}
       </div>
 
       <div className="overflow-x-auto w-full scrollbar-hide">
@@ -442,10 +445,10 @@ const MemeCanvas = ({ selectedStickers, onRemoveSticker, selectedTemplate, selec
             <h3 className="text-xl font-semibold">Please log in to submit your meme</h3>
             <p className="mt-4">You need to be logged in to submit a meme.</p>
             <div className="mt-6 flex justify-center gap-2">
-              <Button onClick={()=>signIn('twitter')} className="bg-red-500 drop-shadow-[2px_2px_0px_#000] border border-black hover:bg-red-700">
+              <Button onClick={() => signIn('twitter')} className="bg-red-500 drop-shadow-[2px_2px_0px_#000] border border-black hover:bg-red-700">
                 Login
               </Button>
-              <Button onClick={()=>setModalIsOpen(false)} className="bg-white hover:bg-gray-200  text-black border border-black  drop-shadow-[2px_2px_0px_#000]">
+              <Button onClick={() => setModalIsOpen(false)} className="bg-white hover:bg-gray-200  text-black border border-black  drop-shadow-[2px_2px_0px_#000]">
                 Close
               </Button>
             </div>
