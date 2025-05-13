@@ -1,11 +1,16 @@
-"use client";
 import './globals.css';
 import type { Metadata } from 'next';
-import { ThemeProvider } from '@/lib/theme-provider';
 import Navbar from '@/components/layout/Navbar';
-import { Toaster } from '@/components/ui/toaster';
-import Head from 'next/head';
-import { SessionProvider } from 'next-auth/react';
+import { Providers } from './providers';
+
+export const metadata: Metadata = {
+  title: 'MemeForge',
+  description: 'Create and explore memes on the blockchain',
+  viewport: 'width=device-width, initial-scale=1',
+  icons: {
+    icon: '/favicon.ico',
+  },
+};
 
 export default function RootLayout({
   children,
@@ -13,26 +18,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <SessionProvider>
-      <html lang="en" suppressHydrationWarning>
-        <Head>
-          <link rel="icon" href="/favicon.ico" sizes="any" />
-        </Head>
-        <body className="font-space-comic">
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="light"
-            enableSystem
-            disableTransitionOnChange
-          >
-            <div className="min-h-screen flex flex-col">
-              <Navbar />
-              <main className="flex-grow">{children}</main>
-            </div>
-            <Toaster />
-          </ThemeProvider>
-        </body>
-      </html>
-    </SessionProvider>
+    <html lang="en" suppressHydrationWarning>
+      <body className="font-gumbo">
+        <Providers>
+          <div className="min-h-screen flex flex-col">
+            <Navbar />
+            <main className="flex-grow">{children}</main>
+          </div>
+        </Providers>
+      </body>
+    </html>
   );
 }

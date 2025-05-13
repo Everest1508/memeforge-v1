@@ -96,15 +96,29 @@ body{
 }
 
 @font-face {
+  font-family: 'jsm';
+  src: url('/font/jsm.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
   font-family: 'Melon';
   src: url('/font/melon.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }
 
+@font-face {
+  font-family: 'gumbo';
+  src: url('/font/gumbo.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 
 body {
-  font-family: 'SpaceComic', sans-serif;
+  font-family: 'gumbo', sans-serif;
 }
 
 /* globals.css */
