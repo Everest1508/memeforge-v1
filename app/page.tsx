@@ -8,14 +8,20 @@ import { useRef, useState } from 'react';
 export default function Home() {
   const [showIntro, setShowIntro] = useState(true);
   const [showEnter, setShowEnter] = useState(true);
+  const [isVideoLoading, setIsVideoLoading] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const handleEnterClick = () => {
+    if (isVideoLoading) return;
     setShowEnter(false);
     if (videoRef.current) {
       videoRef.current.muted = false;
       videoRef.current.play().catch(() => {});
     }
+  };
+
+  const handleVideoLoaded = () => {
+    setIsVideoLoading(false);
   };
 
   const handleSkip = () => {
@@ -33,7 +39,10 @@ export default function Home() {
     <div className="min-h-screen">
       <Head>
         <title>Forge Memes | Create Blockchain Backed Memes</title>
-        <meta name="description" content="Create and share blockchain-powered memes easily with our meme creator platform. Join our creative community today!" />
+        <meta
+          name="description"
+          content="Create and share blockchain-powered memes easily with our meme creator platform. Join our creative community today!"
+        />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
@@ -42,7 +51,9 @@ export default function Home() {
           {/* Enter screen with loader */}
           {showEnter && (
             <div
-              className="absolute inset-0 bg-black flex flex-col items-center justify-center z-20 cursor-pointer"
+              className={`absolute inset-0 bg-black flex flex-col items-center justify-center z-20 ${
+                isVideoLoading ? 'cursor-not-allowed ' : 'cursor-pointer'
+              }`}
               onClick={handleEnterClick}
             >
               <img
@@ -51,13 +62,14 @@ export default function Home() {
                 className="w-32 h-32 object-contain z-10"
                 style={{ animation: 'spin 5s linear infinite' }}
               />
-                  {/* New Image to be added in the middle of the loader */}
               <img
-                src="/iconx/parrot.png" // Replace this with the path to your image
+                src="/iconx/parrot.png"
                 alt="Middle Image"
-                className="w-32 h-32 object-contain -mt-28 z-20" // Customize size and margin as per your needs
+                className="w-32 h-32 object-contain -mt-28 z-20"
               />
-              <p className="mt-4 text-white text-xl font-semibold">Enter</p>
+              <p className="mt-4 text-white text-xl font-semibold">
+                {isVideoLoading ? 'Loading...' : 'Click to Enter'}
+              </p>
             </div>
           )}
 
@@ -73,11 +85,13 @@ export default function Home() {
 
           {/* Background video */}
           <video
+            preload="auto"
             ref={videoRef}
             autoPlay={false}
             muted
             playsInline
             onEnded={handleVideoEnd}
+            onLoadedData={handleVideoLoaded}
             className="w-full h-full object-cover md:bg-center bg-[left_50%_top]"
           >
             <source src="/intro.mp4" type="video/mp4" />
@@ -91,7 +105,11 @@ export default function Home() {
             className="bg-cover md:bg-center bg-[left_center] min-h-screen flex items-center justify-center w-full"
             style={{ backgroundImage: "url('/images/background/landing-page.PNG')" }}
           >
-            <img src="/images/background/landing-page.PNG" alt="Create Memes on Blockchain" className="hidden" />
+            <img
+              src="/images/background/landing-page.PNG"
+              alt="Create Memes on Blockchain"
+              className="hidden"
+            />
             <HeroSection />
           </div>
 

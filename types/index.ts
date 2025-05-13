@@ -4,6 +4,8 @@ export interface Sticker {
   name: string;
   categoryId: string;
   instanceId: string;
+  left?: number;
+  top?: number;
 }
 
 export interface StickerCategory {
@@ -33,6 +35,8 @@ export interface Milestone {
   date: string;
   completed: boolean;
   icon?: string;
+  imageUrl: string;
+  images?: string[];
 }
 
 export interface Template {

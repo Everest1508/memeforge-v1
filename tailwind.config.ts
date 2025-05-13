@@ -10,7 +10,8 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        'custom': ['SpaceComic', 'sans-serif'],
+        'custom': ['gumbo', 'sans-serif'],
+        'gumbo': ['gumbo', 'sans-serif'],
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',

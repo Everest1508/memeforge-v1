@@ -32,13 +32,21 @@ const features = [
 
 const FeaturesSection = () => {
   return (
-    <section className="md:h-[90vh] flex items-center justify-center bg-white overflow-hidden py-16">
-      <div className="container mx-auto px-4 text-gray-900">
+    <section className="md:h-[90vh] flex items-center justify-center bg-white overflow-hidden py-16"
+      style={{
+        backgroundColor: '#C92D2E',
+        backgroundImage: 'url("https://www.tabichain.com/images/new/bg/1.svg")',
+        backgroundSize: 'cover',
+        backgroundRepeat: 'no-repeat',
+        backgroundPosition: 'center',
+      }}
+    >
+      <div className="container mx-auto px-4 text-white drop-shadow-[2px_2px_0px_#000]">
       <div className="text-center mb-16">
-        <h2 className="text-4xl md:text-5xl font-extrabold mb-4 text-red-500 drop-shadow-[2px_2px_0px_#000] leading-[1.5] md:leading-[1.5]">
+        <h2 className="text-4xl md:text-5xl font-extrabold mb-4 text-white drop-shadow-[2px_2px_0px_#000] leading-[1.5] md:leading-[1.5]">
           Why choose Memeforge?
         </h2>
-        <p className="text-base md:text-xl opacity-80 max-w-2xl mx-auto leading-relaxed mt-2">
+        <p className="text-base md:text-xl opacity-80 max-w-2xl mx-auto leading-relaxed mt-2 text-white">
           The ultimate platform for creating, owning, and sharing your meme masterpieces with the world.
         </p>
       </div>
@@ -60,7 +68,7 @@ const FeaturesSection = () => {
               className="bg-white border border-gray-200 rounded-2xl p-6 flex flex-col items-center text-center drop-shadow-[5px_5px_0px_#000] hover:scale-105 transition-transform duration-300"
             >
               <div className="animate-bounce-slow">{feature.icon}</div>
-              <h3 className="text-lg md:text-xl font-bold mt-4 mb-2 text-gray-900">
+              <h3 className="text-lg md:text-xl  mt-4 mb-2 text-gray-900">
                 {feature.title}
               </h3>
               <p className="text-gray-600 text-sm">{feature.description}</p>

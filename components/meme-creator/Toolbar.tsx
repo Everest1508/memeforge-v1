@@ -2,46 +2,20 @@
 
 import { useState, useEffect } from 'react';
 import { StickerCategory, Sticker } from '@/types';
-import { fetchStickerCategories } from '@/lib/data';
-import CategorySelector from './CategorySelector';
-import StickerPanel from './StickerPanel';
+import { fetchStickerCategories, fetchStickersByCategorySlug } from '@/lib/data';
+import { Loader2 } from 'lucide-react';
+import Image from 'next/image';
+import { AnimatePresence, motion } from 'framer-motion';
 
 interface ToolbarProps {
   onSelectSticker: (sticker: Sticker) => void;
 }
 
-const CategorySkeleton = () => (
-  <div className="flex flex-wrap gap-2 mb-4">
-    {Array.from({ length: 5 }).map((_, idx) => (
-      <div
-        key={idx}
-        className="w-20 h-8 rounded-full bg-gray-200 relative overflow-hidden"
-      >
-        <div className="absolute inset-0 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 animate-skeleton" />
-      </div>
-    ))}
-  </div>
-);
-
-const SkeletonGrid = () => (
-  <div className="h-98 p-3 rounded-lg border border-black overflow-y-auto">
-  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-    {Array.from({ length: 8 }).map((_, idx) => (
-      <div
-        key={idx}
-        className="aspect-square bg-gray-200 rounded-md relative overflow-hidden"
-      >
-        <div className="absolute inset-0 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 animate-skeleton" />
-      </div>
-    ))}
-  </div>
-  </div>
-);
-
 const Toolbar = ({ onSelectSticker }: ToolbarProps) => {
   const [categories, setCategories] = useState<StickerCategory[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [openCategory, setOpenCategory] = useState<string | null>(null);
+  const [stickersMap, setStickersMap] = useState<Record<string, Sticker[]>>({});
+  const [loadingCategory, setLoadingCategory] = useState<string | null>(null);
 
   useEffect(() => {
     const loadCategories = async () => {
@@ -49,44 +23,108 @@ const Toolbar = ({ onSelectSticker }: ToolbarProps) => {
         const data = await fetchStickerCategories();
         setCategories(data);
         if (data.length > 0) {
-          setSelectedCategory(data[0].slug);
+          setOpenCategory(data[0].slug); 
+  
+          setLoadingCategory(data[0].slug);
+          try {
+            const stickers = await fetchStickersByCategorySlug(data[0].slug);
+            setStickersMap((prev) => ({ ...prev, [data[0].slug]: stickers }));
+          } catch (err) {
+            console.error("Failed to fetch stickers for default category:", err);
+          } finally {
+            setLoadingCategory(null);
+          }
         }
       } catch (error) {
         console.error('Failed to fetch categories:', error);
-      } finally {
-        setLoading(false);
       }
     };
-
     loadCategories();
   }, []);
 
-  return (
-    <div className="bg-white rounded-lg shadow-sm p-4">
-      <h2 className="text-xl font-bold text-gray-800 mb-4">Stickers</h2>
+  const handleToggleCategory = async (slug: string) => {
+    if (openCategory === slug) {
+      setOpenCategory(null);
+      return;
+    }
 
-      {loading ? (
-        <>
-          <CategorySkeleton />
-          <SkeletonGrid />
-        </>
-      ) : categories.length === 0 ? (
-        <p className="text-gray-500">No categories available.</p>
-      ) : (
-        <>
-          <CategorySelector
-            categories={categories}
-            selectedCategory={selectedCategory}
-            onSelectCategory={setSelectedCategory}
-          />
-          <div className="mt-4 drop-shadow-[2px_2px_0px_#000] scrollbar-hide">
-            <StickerPanel
-              categoryId={selectedCategory}
-              onSelectSticker={onSelectSticker}
-            />
+    setOpenCategory(slug);
+
+    if (!stickersMap[slug]) {
+      setLoadingCategory(slug);
+      try {
+        const stickers = await fetchStickersByCategorySlug(slug);
+        setStickersMap((prev) => ({ ...prev, [slug]: stickers }));
+      } catch (err) {
+        console.error("Failed to fetch stickers:", err);
+      } finally {
+        setLoadingCategory(null);
+      }
+    }
+  };
+
+  return (
+    <div className="space-y-4 overflow-y-auto  h-[calc(80vh-10rem)]">
+      {categories.map((category) => {
+        const isOpen = openCategory === category.slug;
+        const isLoading = loadingCategory === category.slug;
+        const stickers = stickersMap[category.slug] || [];
+
+        return (
+          <div
+            key={category.slug}
+            className="bg-white rounded-lg drop-shadow-[4px_4px_0px_#000] border border-black"
+          >
+            <button
+              className="w-full text-left text-sm  px-4 py-3 flex justify-between items-center border-b border-[#C92D2E]"
+              onClick={() => handleToggleCategory(category.slug)}
+            >
+              <span>{category.name}</span>
+              <span>{isOpen ? '-' : '+'}</span>
+            </button>
+
+            <AnimatePresence initial={false}>
+              {isOpen && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.3, ease: 'easeInOut' }}
+                  className="overflow-hidden"
+                >
+                  <div className="p-3 bg-gray-100 rounded-b-lg border-t border-black">
+                    {isLoading ? (
+                      <div className="h-60 flex items-center justify-center">
+                        <Loader2 className="h-6 w-6 animate-spin text-red-600" />
+                      </div>
+                    ) : stickers.length === 0 ? (
+                      <p className="text-sm text-gray-500">No stickers found.</p>
+                    ) : (
+                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 max-h-80 overflow-y-auto scrollbar-hide">
+                        {stickers.map((sticker) => (
+                          <div
+                            key={sticker.id}
+                            onClick={() => onSelectSticker(sticker)}
+                            className="relative aspect-square cursor-pointer hover:scale-105 transition-transform"
+                          >
+                            <Image
+                              src={sticker.url}
+                              alt={sticker.name}
+                              fill
+                              sizes="(max-width: 768px) 100vw, 33vw"
+                              className="object-contain rounded-md"
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
-        </>
-      )}
+        );
+      })}
     </div>
   );
 };

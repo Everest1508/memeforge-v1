@@ -7,7 +7,6 @@ import axios from "axios";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'; // Make sure you import the CSS
 import { signIn, useSession } from "next-auth/react";
-import { Session } from "node:inspector";
 
 
 interface MemeCanvasProps {
@@ -15,6 +14,7 @@ interface MemeCanvasProps {
   onRemoveSticker: (id: string) => void;
   selectedTemplate: Template | null;
   selectedTexts: TextElement[];
+  fabricCanvasRef: React.MutableRefObject<Canvas | null>;
 }
 
 interface ExtendedFabricImage extends FabricImage {
@@ -25,15 +25,25 @@ interface ExtendedFabricText extends FabricText {
   id?: string;
 }
 
-const MemeCanvas = ({ selectedStickers, onRemoveSticker, selectedTemplate, selectedTexts }: MemeCanvasProps) => {
+const MemeCanvas = ({ selectedStickers, onRemoveSticker, selectedTemplate, selectedTexts,fabricCanvasRef }: MemeCanvasProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const fabricCanvasRef = useRef<Canvas | null>(null);
   const [canvasWidth, setCanvasWidth] = useState(600);
   const [canvasHeight, setCanvasHeight] = useState(600);
   const [uploadedTemplate, setUploadedTemplate] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [modalIsOpen, setModalIsOpen] = useState(true);
   const { data: session } = useSession();
+  const [backgroundColor, setBackgroundColor] = useState<string>("#C92D2E"); // Default background color});
+ 
+
+  useEffect(() => {
+    if (fabricCanvasRef.current) {
+      const canvas = fabricCanvasRef.current;
+      canvas.backgroundColor = backgroundColor || "#C92D2E"; // Set default background color
+      canvas.renderAll();
+    }
+  }, [backgroundColor]);
+  
 
   useEffect(() => {
     if (canvasRef.current) {
@@ -169,6 +179,7 @@ const MemeCanvas = ({ selectedStickers, onRemoveSticker, selectedTemplate, selec
     }
   }, [selectedStickers, canvasWidth, canvasHeight]);
 
+  // Upload template and resize the canvas
 
   useEffect(() => {
     const canvas = fabricCanvasRef.current;
@@ -348,15 +359,30 @@ const MemeCanvas = ({ selectedStickers, onRemoveSticker, selectedTemplate, selec
     }
   };
 
-
+    const handleBackgroundColorChange = (color: string) => {
+      setBackgroundColor(color);
+    
+      if (fabricCanvasRef.current) {
+        const canvas = fabricCanvasRef.current;
+        canvas.backgroundColor = color;
+      }
+    };
+  
 
 
   return (
     <div className="flex flex-col h-full">
-      <div className="bg-white p-4 shadow-sm mb-4 rounded-lg">
-        <div className="flex justify-between items-center">
+      <div className="bg-white p-4 shadow-sm mb-4 rounded-lg drop-shadow-[4px_4px_0px_#000]">
+        <div className="flex justify-between items-center overflow-x-auto">
           <h2 className="text-xl font-bold text-gray-800 hidden md:block">Canvas</h2>
           <div className="flex space-x-2">
+            <input
+              type="color"
+              id="backgroundColor"
+              value={backgroundColor}
+              onChange={(e) => handleBackgroundColorChange(e.target.value)}
+              className="w-10 h-10 border rounded-full cursor-pointer drop-shadow-[2px_2px_0px_#000]"
+            />
             <Button
               size="sm"
               className="flex items-center gap-2 bg-red-600 hover:bg-red-700 drop-shadow-[2px_2px_0px_#000] border border-black"
@@ -441,7 +467,15 @@ const MemeCanvas = ({ selectedStickers, onRemoveSticker, selectedTemplate, selec
       </div>
       {modalIsOpen && !session?.user && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white p-6 rounded-lg w-80 text-center">
+          <div className="bg-white p-6 rounded-lg w-80 text-center drop-shadow-[4px_4px_0px_#000] border border-black"
+            style={{
+              backgroundColor: '#C92D2E',
+              backgroundImage: 'url("https://www.tabichain.com/images/new/bg/1.svg")',
+              backgroundSize: 'cover',
+              backgroundRepeat: 'no-repeat',
+              backgroundPosition: 'center',
+            }}
+          >
             <h3 className="text-xl font-semibold">Please log in to submit your meme</h3>
             <p className="mt-4">You need to be logged in to submit a meme.</p>
             <div className="mt-6 flex justify-center gap-2">
