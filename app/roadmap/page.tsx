@@ -1,6 +1,5 @@
 "use client";
 import { useState, useEffect } from 'react';
-import { roadmapMilestones } from '@/lib/data';
 import Image from 'next/image';
 import { Dialog } from '@headlessui/react';
 import { XIcon } from 'lucide-react';
