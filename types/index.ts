@@ -37,7 +37,13 @@ export interface Milestone {
   icon?: string;
   imageUrl?: string;
   image?: string;
-  images?: any;
+  images?: MilestoneImage[];
+}
+
+export interface MilestoneImage {
+  id: string;
+  image: string;
+  caption: string;
 }
 
 export interface Template {

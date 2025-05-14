@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { Dialog } from '@headlessui/react';
 import { XIcon } from 'lucide-react';
 import { FaClock } from 'react-icons/fa';
-import { Milestone } from '@/types';
+import { Milestone, MilestoneImage } from '@/types';
 
 export default function RoadmapPage() {
   const [isOpen, setIsOpen] = useState(false);
@@ -57,50 +57,76 @@ export default function RoadmapPage() {
           <div className="hidden md:block absolute left-1/2 transform -translate-x-1/2 top-0 h-full w-1 bg-gray-300 z-0" />
 
           <div className="flex flex-col gap-20 relative z-10">
-            {loading ? (
-              <div className="text-white text-center">Загрузка...</div>
-            ) : (
-              milestones.map((milestone, index) => {
-                const isLeft = index % 2 === 0;
+          {loading
+  ? Array.from({ length: 4 }).map((_, index) => {
+      const isLeft = index % 2 === 0;
+      return (
+        <div
+          key={index}
+          className={`
+            flex flex-col md:flex-row items-center md:items-start gap-4 md:gap-8
+            ${isLeft ? 'md:justify-start' : 'md:justify-end'}
+          `}
+        >
+          {isLeft && (
+            <div className="hidden md:flex justify-end w-1/2 pr-6">
+              <MilestoneCardSkeleton />
+            </div>
+          )}
 
-                return (
-                  <div
-                    key={milestone.id}
-                    className={`
-                      flex flex-col md:flex-row items-center md:items-start gap-4 md:gap-8
-                      ${isLeft ? 'md:justify-start' : 'md:justify-end'}
-                    `}
-                    onClick={() => openModal(milestone)}
-                  >
-                    {/* Left side for even, spacer for odd */}
-                    {isLeft && (
-                      <div className="hidden md:flex justify-end w-1/2 pr-6">
-                        <MilestoneCard milestone={milestone} />
-                      </div>
-                    )}
+          <div className="flex items-center justify-center w-full md:w-12 h-12 relative z-20">
+            <div className="w-10 h-10 bg-gray-400 rounded-full" />
+          </div>
 
-                    {/* Connector */}
-                    <div className="flex items-center justify-center w-full md:w-12 h-12 relative z-20">
-                      <div className="w-10 h-10 bg-red-500 rounded-full flex items-center justify-center text-white drop-shadow-[2px_2px_0px_#000]">
-                        <FaClock />
-                      </div>
-                    </div>
+          {!isLeft && (
+            <div className="hidden md:flex justify-start w-1/2 pl-6">
+              <MilestoneCardSkeleton />
+            </div>
+          )}
 
-                    {/* Right side for odd, spacer for even */}
-                    {!isLeft && (
-                      <div className="hidden md:flex justify-start w-1/2 pl-6">
-                        <MilestoneCard milestone={milestone} />
-                      </div>
-                    )}
+          <div className="md:hidden w-full">
+            <MilestoneCardSkeleton />
+          </div>
+        </div>
+      );
+    })
+  : milestones.map((milestone, index) => {
+      const isLeft = index % 2 === 0;
 
-                    {/* Mobile version (always full width) */}
-                    <div className="md:hidden w-full">
-                      <MilestoneCard milestone={milestone} />
-                    </div>
-                  </div>
-                );
-              })
-            )}
+      return (
+        <div
+          key={milestone.id}
+          className={`
+            flex flex-col md:flex-row items-center md:items-start gap-4 md:gap-8
+            ${isLeft ? 'md:justify-start' : 'md:justify-end'}
+          `}
+          onClick={() => openModal(milestone)}
+        >
+          {isLeft && (
+            <div className="hidden md:flex justify-end w-1/2 pr-6">
+              <MilestoneCard milestone={milestone} />
+            </div>
+          )}
+
+          <div className="flex items-center justify-center w-full md:w-12 h-12 relative z-20">
+            <div className="w-10 h-10 bg-red-500 rounded-full flex items-center justify-center text-white drop-shadow-[2px_2px_0px_#000]">
+              <FaClock />
+            </div>
+          </div>
+
+          {!isLeft && (
+            <div className="hidden md:flex justify-start w-1/2 pl-6">
+              <MilestoneCard milestone={milestone} />
+            </div>
+          )}
+
+          <div className="md:hidden w-full">
+            <MilestoneCard milestone={milestone} />
+          </div>
+        </div>
+      );
+    })}
+
           </div>
         </div>
       </div>
@@ -146,7 +172,7 @@ export default function RoadmapPage() {
   );
 }
 
-function SelectedImageGallery({ images }: { images: string[] }) {
+function SelectedImageGallery({ images }: { images: MilestoneImage[] }) {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const selectedImage = images[selectedIndex];
 
@@ -154,7 +180,7 @@ function SelectedImageGallery({ images }: { images: string[] }) {
     <div className="flex flex-col items-center drop-shadow-[2px_2px_0px_#000]">
       <div className="w-full h-96 bg-gray-100 rounded-lg overflow-hidden mb-4">
         <Image
-          src={selectedImage}
+          src={selectedImage.image}
           alt={`Selected image`}
           width={800}
           height={600}
@@ -172,7 +198,7 @@ function SelectedImageGallery({ images }: { images: string[] }) {
             onClick={() => setSelectedIndex(idx)}
           >
             <Image
-              src={img}
+              src={img.image}
               alt={`Thumbnail ${idx + 1}`}
               width={80}
               height={80}
@@ -193,11 +219,25 @@ function MilestoneCard({ milestone }: { milestone: Milestone }) {
         alt={milestone.title}
         width={400}
         height={300}
-        className="w-full h-48 object-cover"
+        className="w-full h-48 object-contain rounded-t-lg"
       />
       <div className="p-4">
         <h3 className="text-lg text-gray-800">{milestone.title}</h3>
         <p className="text-sm text-gray-600">{milestone.description}</p>
+      </div>
+    </div>
+  );
+}
+
+
+function MilestoneCardSkeleton() {
+  return (
+    <div className="bg-white drop-shadow-[4px_4px_0px_#000] rounded-lg overflow-hidden w-full max-w-sm animate-pulse">
+      <div className="w-full h-48 bg-gray-300 rounded-t-lg" />
+      <div className="p-4 space-y-2">
+        <div className="h-5 bg-gray-300 rounded w-3/4" />
+        <div className="h-3 bg-gray-300 rounded w-full" />
+        <div className="h-3 bg-gray-300 rounded w-5/6" />
       </div>
     </div>
   );
