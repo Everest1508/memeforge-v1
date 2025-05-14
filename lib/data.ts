@@ -155,7 +155,7 @@ export const roadmapMilestones: Milestone[] = [
     date: '2024 Q3',
     completed: true,
     icon: '⛓️',
-    imageUrl: 'https://via.placeholder.com/300x200/4ECDC4/ffffff?text=Blockchain+Integration', // Placeholder image for Blockchain
+    imageUrl: 'https://via.placeholder.com/300x200/4ECDC4/ffffff?text=Blockchain+Integration',
   },
   {
     id: '3',
@@ -164,7 +164,7 @@ export const roadmapMilestones: Milestone[] = [
     date: '2024 Q4',
     completed: false,
     icon: '🛒',
-    imageUrl: 'https://via.placeholder.com/300x200/1A535C/ffffff?text=Marketplace', // Placeholder image for Marketplace
+    imageUrl: 'https://via.placeholder.com/300x200/1A535C/ffffff?text=Marketplace',
   },
   {
     id: '4',
@@ -173,7 +173,7 @@ export const roadmapMilestones: Milestone[] = [
     date: '2025 Q1',
     completed: false,
     icon: '📱',
-    imageUrl: 'https://via.placeholder.com/300x200/F7B731/ffffff?text=Mobile+App', // Placeholder image for Mobile App
+    imageUrl: 'https://via.placeholder.com/300x200/F7B731/ffffff?text=Mobile+App',
   },
   {
     id: '5',
@@ -182,7 +182,7 @@ export const roadmapMilestones: Milestone[] = [
     date: '2025 Q2',
     completed: false,
     icon: '🏛️',
-    imageUrl: 'https://via.placeholder.com/300x200/FF7F50/ffffff?text=DAO+Governance', // Placeholder image for DAO Governance
+    imageUrl: 'https://via.placeholder.com/300x200/FF7F50/ffffff?text=DAO+Governance',
   },
   {
     id: '6',
@@ -191,6 +191,6 @@ export const roadmapMilestones: Milestone[] = [
     date: '2025 Q4',
     completed: false,
     icon: '🌎',
-    imageUrl: 'https://via.placeholder.com/300x200/4A90E2/ffffff?text=Global+Expansion', // Placeholder image for Global Expansion
+    imageUrl: 'https://via.placeholder.com/300x200/4A90E2/ffffff?text=Global+Expansion',
   },
 ];

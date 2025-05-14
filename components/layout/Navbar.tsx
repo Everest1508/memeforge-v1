@@ -1,38 +1,62 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePathname } from "next/navigation";
-import { useSession, signIn, signOut } from "next-auth/react"; // Import NextAuth.js session hook
+import { useSession, signIn, signOut } from "next-auth/react";
+import { Menu, X } from "lucide-react";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAvatarMenuOpen, setIsAvatarMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const pathname = usePathname();
+  const { data: session } = useSession();
 
-  const { data: session } = useSession(); // Fetch session data
+  // Handle scroll effect
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // Close menu when route changes
+  useEffect(() => {
+    setIsMenuOpen(false);
+    setIsAvatarMenuOpen(false);
+  }, [pathname]);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
+    if (isAvatarMenuOpen) setIsAvatarMenuOpen(false);
   };
 
   const toggleAvatarMenu = () => {
     setIsAvatarMenuOpen(!isAvatarMenuOpen);
+    if (isMenuOpen) setIsMenuOpen(false);
   };
 
   return (
-    <nav className="text-white bg-black/60 py-4 fixed top-0 z-50 shadow-md w-full pt-8 font-[gumbo] z-40">
+    <nav
+      className={cn(
+        "fixed top-0 z-50 w-full transition-all duration-300",
+        isScrolled ? "bg-black/80 backdrop-blur-md py-2" : "bg-black/60 py-4"
+      )}
+    >
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center">
+          {/* Logo */}
           <Link href="/" className="text-2xl font-bold flex items-center">
             <img src="/images/logo1.png" alt="MemeForge Logo" className="w-14 h-14 mr-2 -mt-3" />
-            <span className="drop-shadow-[2px_2px_0px_#000]">MemeForge</span>
+            <span className="text-white drop-shadow-[2px_2px_0px_#000]">MemeForge</span>
           </Link>
 
-          {/* Desktop Navigation Links */}
-          <div className="hidden md:flex space-x-8">
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex space-x-8 -ml-20">
             <NavLink href="/meme-creator" active={pathname === "/meme-creator"}>
               Memelab
             </NavLink>
@@ -44,137 +68,86 @@ const Navbar = () => {
             </NavLink>
           </div>
 
-            {/* Mobile Avatar Button */}
-            <div
-              className="md:hidden flex flex-col items-center space-y-1 cursor-pointer"
-              onClick={toggleAvatarMenu}
-            >
-              <div className="w-10 h-10 rounded-full overflow-hidden">
-                {session && session.user?.image ? (
-                  <img
-                    src={session.user.image}
-                    alt="User Avatar"
-                    className="w-full h-full object-contain rounded-full"
-                  />
-                ) : (
-                  <img src="/iconx/avatar.png" alt="User Avatar" className="w-full h-full object-contain" />
-                )}
-              </div>
-              <span className="text-white text-xs font-[Melon] mt-1">Dashboard</span>
-            </div>
+          {/* Mobile Menu Button */}
+          <button
+            className="md:hidden p-2 text-white hover:text-red-400 transition-colors"
+            onClick={toggleMenu}
+            aria-label="Toggle menu"
+          >
+            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
 
-
-          {/* Desktop Avatar Button with User Name */}
+          {/* Desktop Avatar */}
           <div
             className="hidden md:flex flex-col items-center space-y-1 relative cursor-pointer"
             onClick={toggleAvatarMenu}
           >
             <div className="w-10 h-10 rounded-full overflow-hidden">
-              {session && session.user?.image ? (
+              {session?.user?.image ? (
                 <img
                   src={session.user.image}
                   alt="User Avatar"
-                  className="w-10 h-10 object-contain rounded-full"
+                  className="w-full h-full object-cover"
                 />
               ) : (
-                <img src="/iconx/avatar.png" alt="User Avatar" className="w-10 h-10 object-contain" />
+                <img src="/iconx/avatar.png" alt="User Avatar" className="w-full h-full object-contain" />
               )}
             </div>
             <span className="text-white text-sm font-[Melon]">Dashboard</span>
           </div>
-
         </div>
 
-        {/* Avatar Pop-up Menu for Mobile (Menu appears when avatar clicked) */}
-        <AnimatePresence>
-          {isAvatarMenuOpen && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              className="md:hidden absolute top-14 right-4 bg-black/70 rounded-md p-4 w-48"
-            >
-              <div className="flex flex-col space-y-2">
-                <MobileNavLink href="/meme-creator" onClick={toggleAvatarMenu}>
-                  Memelab
-                </MobileNavLink>
-                <MobileNavLink href="/roadmap" onClick={toggleAvatarMenu}>
-                  Roadmap
-                </MobileNavLink>
-                <MobileNavLink href="/featured" onClick={toggleAvatarMenu}>
-                  Featured
-                </MobileNavLink>
-
-                {/* Login/Logout for Mobile */}
-                {session ? (
-                  <MobileNavLink href="#" onClick={() => signOut()}>
-                    Logout
-                  </MobileNavLink>
-                ) : (
-                  <MobileNavLink href="#" onClick={() => signIn('twitter')}>
-                    Login
-                  </MobileNavLink>
-                )}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Avatar Pop-up Menu for Desktop (Only Login/Logout options visible) */}
-        <AnimatePresence>
-          {isAvatarMenuOpen && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              className="hidden md:block absolute top-14 right-4 bg-black/70 rounded-md p-4 w-48"
-            >
-              <div className="flex flex-col space-y-2">
-                {/* Login/Logout for Desktop */}
-                {session ? (
-                  <MobileNavLink href="#" onClick={() => signOut()}>
-                    Logout
-                  </MobileNavLink>
-                ) : (
-                  <MobileNavLink href="#" onClick={() => signIn('twitter')}>
-                    Login
-                  </MobileNavLink>
-                )}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Mobile Navigation (Hamburger Menu) */}
+        {/* Mobile Menu */}
         <AnimatePresence>
           {isMenuOpen && (
             <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.3 }}
-              className="md:hidden overflow-hidden mt-4"
+              className="md:hidden overflow-hidden"
             >
-              <div className="flex flex-col space-y-4 py-2">
+              <div className="flex flex-col space-y-4 py-4">
                 <MobileNavLink href="/meme-creator" onClick={toggleMenu}>
-                  Memelab
+                  <div className="text-center">Memelab</div>
                 </MobileNavLink>
                 <MobileNavLink href="/roadmap" onClick={toggleMenu}>
-                  Roadmap
+                  <div className="text-center">Roadmap</div>
                 </MobileNavLink>
-                <MobileNavLink href="/team" onClick={toggleMenu}>
-                  Team
+                <MobileNavLink href="/featured" onClick={toggleMenu}>
+                  <div className="text-center">Featured</div>
                 </MobileNavLink>
+                {session ? (
+                  <MobileNavLink href="#" onClick={() => signOut()}>
+                    <div className="text-center">Logout</div>
+                  </MobileNavLink>
+                ) : (
+                  <MobileNavLink href="#" onClick={() => signIn('twitter')}>
+                    <div className="text-center">Login</div>
+                  </MobileNavLink>
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-                {/* Login/Logout for Mobile */}
+        {/* Avatar Menu */}
+        <AnimatePresence>
+          {isAvatarMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
+              className="absolute right-4 top-16 bg-black/90 backdrop-blur-md rounded-lg p-4 w-48 shadow-lg"
+            >
+              <div className="flex flex-col space-y-2">
                 {session ? (
                   <MobileNavLink href="#" onClick={() => signOut()}>
                     Logout
                   </MobileNavLink>
                 ) : (
-                  <MobileNavLink href="#" onClick={() => signIn()}>
+                  <MobileNavLink href="#" onClick={() => signIn('twitter')}>
                     Login
                   </MobileNavLink>
                 )}
@@ -193,14 +166,14 @@ const NavLink = ({ href, children, active }: { href: string; children: React.Rea
     <Link
       href={href}
       className={cn(
-        "relative font-medium group px-3 py-2 transition-transform hover:scale-105",
-        active && "text-red-400"
+        "relative font-medium group px-3 py-2 transition-all duration-300",
+        active ? "text-red-400" : "text-white hover:text-red-400"
       )}
     >
       {children}
       <span
         className={cn(
-          "absolute left-0 -bottom-1 w-full h-0.5 bg-red-400 scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300",
+          "absolute left-0 -bottom-1 w-full h-0.5 bg-red-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300",
           active && "scale-x-100"
         )}
       />
@@ -219,11 +192,15 @@ const MobileNavLink = ({
   children: React.ReactNode;
 }) => {
   return (
-    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }}>
+    <motion.div
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+      className="w-full"
+    >
       <Link
         href={href}
         onClick={onClick}
-        className="block py-2 px-4 rounded-md bg-black/20 hover:bg-red-700 transition-colors duration-200"
+        className="block w-full py-2 px-4 rounded-md bg-black/20 hover:bg-red-700/20 text-white transition-colors duration-200"
       >
         {children}
       </Link>

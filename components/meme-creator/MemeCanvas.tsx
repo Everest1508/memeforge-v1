@@ -5,7 +5,7 @@ import { Download, MoveHorizontal, MoveVertical, SendIcon, Share, Share2, Upload
 import { Button } from "@/components/ui/button";
 import axios from "axios";
 import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css'; // Make sure you import the CSS
+import 'react-toastify/dist/ReactToastify.css';
 import { signIn, useSession } from "next-auth/react";
 
 
@@ -375,17 +375,17 @@ const MemeCanvas = ({ selectedStickers, onRemoveSticker, selectedTemplate, selec
       <div className="bg-white p-4 shadow-sm mb-4 rounded-lg drop-shadow-[4px_4px_0px_#000]">
         <div className="flex justify-between items-center overflow-x-auto">
           <h2 className="text-xl font-bold text-gray-800 hidden md:block">Canvas</h2>
-          <div className="flex space-x-2">
+          <div className="flex space-x-2 ml-[5px]">
             <input
               type="color"
               id="backgroundColor"
               value={backgroundColor}
               onChange={(e) => handleBackgroundColorChange(e.target.value)}
-              className="w-10 h-10 border rounded-full cursor-pointer drop-shadow-[2px_2px_0px_#000]"
+              className="color-picker w-8 h-8 border-2 border-black rounded-full cursor-pointer p-0 overflow-hidden"
             />
             <Button
               size="sm"
-              className="flex items-center gap-2 bg-red-600 hover:bg-red-700 drop-shadow-[2px_2px_0px_#000] border border-black"
+              className="flex items-center gap-2 bg-red-600 hover:bg-red-700 border border-black"
               onClick={handleSubmit}
             ><SendIcon className="h-4 w-4" />
               <span>Submit</span>
@@ -399,7 +399,7 @@ const MemeCanvas = ({ selectedStickers, onRemoveSticker, selectedTemplate, selec
             />
             <Button
               size="sm"
-              className="flex items-center gap-2 bg-red-600 hover:bg-red-700 drop-shadow-[2px_2px_0px_#000] border border-black"
+              className="flex items-center gap-2 bg-red-600 hover:bg-red-700 border border-black"
               onClick={() => fileInputRef.current?.click()} // 👈 Trigger file input click
             >
               <Upload className="h-4 w-4" />
@@ -408,7 +408,7 @@ const MemeCanvas = ({ selectedStickers, onRemoveSticker, selectedTemplate, selec
 
             <Button
               size="sm"
-              className="flex items-center gap-2 bg-red-600 hover:bg-red-700 drop-shadow-[2px_2px_0px_#000] border border-black"
+              className="flex items-center gap-2 bg-red-600 hover:bg-red-700 border border-black"
               onClick={handleDownload}
             >
               <Download className="h-4 w-4" />
