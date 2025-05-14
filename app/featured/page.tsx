@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 
 type Feature = {
   title: string;
@@ -14,7 +15,7 @@ const features: Feature[] = [
   {
     title: 'Get your Tabi Pay card',
     description: 'Seamlessly mint and manage your own meme-powered debit card with on-chain identity.',
-    image: '/images/featured/tabi-card.png',
+    image: 'https://www.tabichain.com/images/new/card.png',
     link: '/featured/tabi-pay',
   },
   {
@@ -71,9 +72,11 @@ export default function FeaturedPage() {
         
         
         
-            <img
+            <Image
               src={feature.image}
               alt={feature.title}
+              width={400}
+              height={300}
               className="rounded-lg w-full h-56 object-cover mb-6"
             />
             <h2 className="text-2xl mb-4">{feature.title}</h2>

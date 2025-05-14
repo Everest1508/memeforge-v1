@@ -27,6 +27,7 @@ const nextConfig = {
         hostname: 'randomuser.me'
       }
     ],
+    domains: ['www.tabichain.com', 'via.placeholder.com', 'memeforge.mooo.com'],
   },
 };
 

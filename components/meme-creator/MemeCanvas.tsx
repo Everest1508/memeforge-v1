@@ -5,7 +5,7 @@ import { Download, MoveHorizontal, MoveVertical, SendIcon, Share, Share2, Upload
 import { Button } from "@/components/ui/button";
 import axios from "axios";
 import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css'; // Make sure you import the CSS
+import 'react-toastify/dist/ReactToastify.css';
 import { signIn, useSession } from "next-auth/react";
 
 
@@ -381,7 +381,8 @@ const MemeCanvas = ({ selectedStickers, onRemoveSticker, selectedTemplate, selec
               id="backgroundColor"
               value={backgroundColor}
               onChange={(e) => handleBackgroundColorChange(e.target.value)}
-              className="w-10 h-10 border rounded-full cursor-pointer drop-shadow-[2px_2px_0px_#000]"
+              className="w-10 h-10 border-2 border-black rounded-full cursor-pointer drop-shadow-[2px_2px_0px_#000] p-0 overflow-hidden"
+              style={{ WebkitAppearance: 'none', appearance: 'none' }}
             />
             <Button
               size="sm"
