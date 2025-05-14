@@ -9,7 +9,18 @@ type Feature = {
   description: string;
   image: string;
   link?: string;
+  url?: string;
+  is_coming_soon?: boolean;
 };
+
+const SkeletonCard = () => (
+  <div className="bg-white p-6 rounded-lg shadow-md animate-pulse">
+    <div className="bg-gray-300 h-56 mb-6 rounded-lg"></div>
+    <div className="bg-gray-300 w-3/4 h-6 mb-4"></div>
+    <div className="bg-gray-300 w-full h-4 mb-6"></div>
+    <div className="bg-gray-300 w-1/2 h-6"></div>
+  </div>
+);
 
 export default function FeaturedPage() {
   const [features, setFeatures] = useState<Feature[]>([]);
@@ -17,8 +28,8 @@ export default function FeaturedPage() {
 
   useEffect(() => {
     fetch('https://memeforge.mooo.com/api/featured')
-      .then(res => res.json())
-      .then(data => {
+      .then((res) => res.json())
+      .then((data) => {
         setFeatures(data);
         setLoading(false);
       })
@@ -41,47 +52,46 @@ export default function FeaturedPage() {
         Featured
       </h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8 lg:gap-10">
-        {loading ? (
-          <div className="text-white text-center col-span-3">Загрузка...</div>
-        ) : (
-          features.map((feature, index) => (
-            <motion.div
-              key={index}
-              initial={{ x: 0, rotate: 0 }}
-              whileHover="panic"
-              variants={{
-                panic: {
-                  x: [0, -130, 130, -170, 170, -100, 100, -5, 5, 0],
-                  rotate: [0, -5, 5, -5, 5, -3, 3, -1, 1, 0],
-                  transition: {
-                    duration: 0.8,
-                    repeat: Infinity,
-                    ease: 'easeInOut',
+        {loading
+          ? Array.from({ length: 6 }).map((_, index) => (
+              <SkeletonCard key={index} />
+            ))
+          : features.map((feature, index) => (
+              <motion.div
+                key={index}
+                initial={{ x: 0, rotate: 0 }}
+                whileHover="panic"
+                variants={{
+                  panic: {
+                    scale: 1.05,
                   },
-                },
-              }}
-              className="bg-white text-black p-6 rounded-lg shadow-md transition-all duration-300 drop-shadow-[4px_4px_0px_#000]"
-            >
-              <Image
-                src={feature.image}
-                alt={feature.title}
-                width={400}
-                height={300}
-                className="rounded-lg w-full h-56 object-cover mb-6"
-              />
-              <h2 className="text-2xl mb-4">{feature.title}</h2>
-              <p className="text-md mb-6">{feature.description}</p>
-              {feature.link && (
-                <a
-                  href={feature.link}
-                  className="inline-block bg-[#C92D2E] px-6 py-2 rounded-md text-white font-semibold hover:bg-red-600 transition-colors duration-300"
-                >
-                  Explore
-                </a>
-              )}
-            </motion.div>
-          ))
-        )}
+                }}
+                className="bg-white text-black p-6 rounded-lg shadow-md transition-all duration-300 drop-shadow-[4px_4px_0px_#000]"
+              >
+                <Image
+                  src={feature.image}
+                  alt={feature.title}
+                  width={400}
+                  height={300}
+                  className="rounded-lg w-full h-56 object-cover mb-6"
+                />
+                <h2 className="text-2xl mb-4">{feature.title}</h2>
+                <p className="text-md mb-6">{feature.description}</p>
+                {feature.url && (
+                  <a
+                    href={feature.url}
+                    className="inline-block bg-[#C92D2E] px-6 py-2 rounded-md text-white font-semibold hover:bg-red-600 transition-colors duration-300"
+                  >
+                    Explore
+                  </a>
+                )}
+                {feature.is_coming_soon && !feature.url && (
+                  <div className="text-red-500 font-bold mt-4">
+                    Coming Soon!
+                  </div>
+                )}
+              </motion.div>
+            ))}
       </div>
     </div>
   );
