@@ -109,21 +109,21 @@ const Navbar = () => {
             >
               <div className="flex flex-col space-y-4 py-4">
                 <MobileNavLink href="/meme-creator" onClick={toggleMenu}>
-                  Memelab
+                  <div className="text-center">Memelab</div>
                 </MobileNavLink>
                 <MobileNavLink href="/roadmap" onClick={toggleMenu}>
-                  Roadmap
+                  <div className="text-center">Roadmap</div>
                 </MobileNavLink>
                 <MobileNavLink href="/featured" onClick={toggleMenu}>
-                  Featured
+                  <div className="text-center">Featured</div>
                 </MobileNavLink>
                 {session ? (
                   <MobileNavLink href="#" onClick={() => signOut()}>
-                    Logout
+                    <div className="text-center">Logout</div>
                   </MobileNavLink>
                 ) : (
                   <MobileNavLink href="#" onClick={() => signIn('twitter')}>
-                    Login
+                    <div className="text-center">Login</div>
                   </MobileNavLink>
                 )}
               </div>

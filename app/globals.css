@@ -129,3 +129,31 @@ body {
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
 }
+
+input[type="color"].color-picker {
+  -webkit-appearance: none;
+  appearance: none;
+  padding: 0;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  overflow: hidden;
+  cursor: pointer;
+}
+input[type="color"].color-picker::-webkit-color-swatch-wrapper {
+  padding: 0;
+  border-radius: 50%;
+}
+input[type="color"].color-picker::-webkit-color-swatch {
+  border: none;
+  border-radius: 50%;
+}
+input[type="color"].color-picker::-moz-color-swatch {
+  border: none;
+  border-radius: 50%;
+}
+input[type="color"].color-picker::-ms-color-swatch {
+  border: none;
+  border-radius: 50%;
+}

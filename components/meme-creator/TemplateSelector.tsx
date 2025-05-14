@@ -57,11 +57,11 @@ const TemplateSelector = ({ onSelectTemplate }: TemplateSelectorProps) => {
         initial={{ opacity: 1, y: 0 }}
         animate={{ opacity: showHeader ? 1 : 0, y: showHeader ? 0 : -20 }}
         transition={{ duration: 0.3 }}
-        className="text-xl font-bold text-gray-800 mb-4 bg-white sticky top-0 inset-0 z-10"
+        className="text-lg sm:text-xl font-bold text-gray-800 mb-3 sm:mb-4 bg-white sticky top-0 inset-0 z-10 px-2 py-2"
       >
         Templates
       </motion.h2>
-      <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-4">
         {loading
           ? Array.from({ length: 6 }).map((_, index) => (
               <SkeletonCard key={index} />
@@ -76,11 +76,11 @@ const TemplateSelector = ({ onSelectTemplate }: TemplateSelectorProps) => {
                   src={`https://memeforge.mooo.com${template.url}`}
                   alt={template.name}
                   fill
-                  sizes="(max-width: 768px) 100vw, 33vw"
+                  sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 20vw"
                   className="object-cover group-hover:scale-105 transition-transform duration-200"
                 />
                 <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all flex items-end justify-center">
-                  <p className="text-white text-sm font-medium pb-2 transform translate-y-full group-hover:translate-y-0 transition-transform">
+                  <p className="text-white text-xs sm:text-sm font-medium pb-1 sm:pb-2 transform translate-y-full group-hover:translate-y-0 transition-transform">
                     {template.name}
                   </p>
                 </div>

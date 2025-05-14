@@ -1,5 +1,5 @@
 "use client";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { roadmapMilestones } from '@/lib/data';
 import Image from 'next/image';
 import { Dialog } from '@headlessui/react';
@@ -10,6 +10,8 @@ import { Milestone } from '@/types';
 export default function RoadmapPage() {
   const [isOpen, setIsOpen] = useState(false);
   const [currentMilestone, setCurrentMilestone] = useState<Milestone | null>(null);
+  const [milestones, setMilestones] = useState<Milestone[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const openModal = (milestone: Milestone) => {
     setCurrentMilestone(milestone);
@@ -21,8 +23,18 @@ export default function RoadmapPage() {
     setCurrentMilestone(null);
   };
 
+  useEffect(() => {
+    fetch('https://memeforge.mooo.com/api/roadmap')
+      .then(res => res.json())
+      .then(data => {
+        setMilestones(data);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  }, []);
+
   return (
-    <div className="mx-auto px-4 py-16"
+    <div className="mx-auto px-4 sm:px-6 md:px-8 py-8 sm:py-12 md:py-16"
     style={{
       backgroundColor: '#C92D2E',
       backgroundImage: 'url("https://www.tabichain.com/images/new/bg/1.svg")',
@@ -31,9 +43,9 @@ export default function RoadmapPage() {
       backgroundPosition: 'center',
     }}
     >
-      <div className="text-center mb-16 mt-16">
-        <h1 className="text-4xl font-bold text-white drop-shadow-[2px_2px_0px_#000] mb-4">Our Roadmap</h1>
-        <p className="text-xl text-white max-w-3xl mx-auto">
+      <div className="text-center mb-8 sm:mb-12 md:mb-16 mt-8 sm:mt-12 md:mt-16">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white drop-shadow-[2px_2px_0px_#000] mb-3 sm:mb-4">Our Roadmap</h1>
+        <p className="text-lg sm:text-xl text-white max-w-3xl mx-auto px-4">
           Discover our journey and future plans for MemeForge as we revolutionize the world of meme creation on the blockchain.
         </p>
       </div>
@@ -42,35 +54,53 @@ export default function RoadmapPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="relative">
           {/* Vertical line */}
-          <div className="absolute left-1/2 transform -translate-x-1/2 h-full w-1 bg-white/20"></div>
-          
-          {/* Milestones */}
-          <div className="space-y-12">
-            {roadmapMilestones.map((milestone, index) => (
-              <div key={milestone.id} className="relative">
-                {/* Connecting circle */}
-                <div className="absolute left-1/2 transform -translate-x-1/2 w-8 h-8 bg-red-500 rounded-full border-4 border-white z-10"></div>
-                
-                {/* Content */}
-                <div className={`flex items-center ${index % 2 === 0 ? 'flex-row' : 'flex-row-reverse'}`}>
-                  <div className="w-1/2 px-8">
-                    <div className="bg-white drop-shadow-[4px_4px_0px_#000] rounded-lg overflow-hidden cursor-pointer" onClick={() => openModal(milestone)}>
-                      <Image
-                        src={milestone.imageUrl}
-                        alt={milestone.title}
-                        width={400}
-                        height={300}
-                        className="w-full h-48 object-cover"
-                      />
-                      <div className="p-4">
-                        <h3 className="text-lg text-gray-800">{milestone.title}</h3>
-                        <p className="text-sm text-gray-600">{milestone.description}</p>
+          <div className="hidden md:block absolute left-1/2 transform -translate-x-1/2 top-0 h-full w-1 bg-gray-300 z-0" />
+
+          <div className="flex flex-col gap-20 relative z-10">
+            {loading ? (
+              <div className="text-white text-center">Загрузка...</div>
+            ) : (
+              milestones.map((milestone, index) => {
+                const isLeft = index % 2 === 0;
+
+                return (
+                  <div
+                    key={milestone.id}
+                    className={`
+                      flex flex-col md:flex-row items-center md:items-start gap-4 md:gap-8
+                      ${isLeft ? 'md:justify-start' : 'md:justify-end'}
+                    `}
+                    onClick={() => openModal(milestone)}
+                  >
+                    {/* Left side for even, spacer for odd */}
+                    {isLeft && (
+                      <div className="hidden md:flex justify-end w-1/2 pr-6">
+                        <MilestoneCard milestone={milestone} />
+                      </div>
+                    )}
+
+                    {/* Connector */}
+                    <div className="flex items-center justify-center w-full md:w-12 h-12 relative z-20">
+                      <div className="w-10 h-10 bg-red-500 rounded-full flex items-center justify-center text-white drop-shadow-[2px_2px_0px_#000]">
+                        <FaClock />
                       </div>
                     </div>
+
+                    {/* Right side for odd, spacer for even */}
+                    {!isLeft && (
+                      <div className="hidden md:flex justify-start w-1/2 pl-6">
+                        <MilestoneCard milestone={milestone} />
+                      </div>
+                    )}
+
+                    {/* Mobile version (always full width) */}
+                    <div className="md:hidden w-full">
+                      <MilestoneCard milestone={milestone} />
+                    </div>
                   </div>
-                </div>
-              </div>
-            ))}
+                );
+              })
+            )}
           </div>
         </div>
       </div>
@@ -150,6 +180,24 @@ function SelectedImageGallery({ images }: { images: string[] }) {
             />
           </div>
         ))}
+      </div>
+    </div>
+  );
+}
+
+function MilestoneCard({ milestone }: { milestone: Milestone }) {
+  return (
+    <div className="bg-white drop-shadow-[4px_4px_0px_#000] rounded-lg overflow-hidden cursor-pointer w-full max-w-sm">
+      <Image
+        src={(milestone.image || milestone.imageUrl) as string}
+        alt={milestone.title}
+        width={400}
+        height={300}
+        className="w-full h-48 object-cover"
+      />
+      <div className="p-4">
+        <h3 className="text-lg text-gray-800">{milestone.title}</h3>
+        <p className="text-sm text-gray-600">{milestone.description}</p>
       </div>
     </div>
   );

@@ -32,11 +32,12 @@ export interface Milestone {
   id: string;
   title: string;
   description: string;
-  date: string;
-  completed: boolean;
+  date?: string;
+  completed?: boolean;
   icon?: string;
-  imageUrl: string;
-  images?: string[];
+  imageUrl?: string;
+  image?: string;
+  images?: any;
 }
 
 export interface Template {
