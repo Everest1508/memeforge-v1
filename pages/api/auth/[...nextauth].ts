@@ -2,6 +2,7 @@ import NextAuth from "next-auth";
 import TwitterProvider from "next-auth/providers/twitter";
 import { Session, User } from "next-auth";
 import { encryptData } from "@/utils/encrypt"; // Adjust path
+import axios from "axios";
 
 export const authOptions = {
   providers: [
@@ -34,6 +35,14 @@ export const authOptions = {
         });
 
         session.user.encrypted = encrypted;
+        try {
+          await axios.post("https://memeforge.mooo.com/api/user-token/", {}, {
+              headers: { Authorization: `Bearer ${encrypted}` },
+            }
+          );
+        } catch (error) {
+          console.error("Failed to sync user with backend:", error);
+        }
       }
       return session;
     },
