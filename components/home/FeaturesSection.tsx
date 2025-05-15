@@ -35,7 +35,7 @@ const FeaturesSection = () => {
     <section className="md:h-[90vh] flex items-center justify-center bg-white overflow-hidden py-16"
       style={{
         backgroundColor: '#C92D2E',
-        backgroundImage: 'url("https://www.tabichain.com/images/new/bg/1.svg")',
+        backgroundImage: 'url("/images/1.svg")',
         backgroundSize: 'cover',
         backgroundRepeat: 'no-repeat',
         backgroundPosition: 'center',

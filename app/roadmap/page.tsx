@@ -33,10 +33,10 @@ export default function RoadmapPage() {
   }, []);
 
   return (
-    <div className="mx-auto px-4 sm:px-6 md:px-8 py-8 sm:py-12 md:py-16"
+    <div className="mx-auto px-4 sm:px-6 md:px-8 py-12 sm:py-12 md:py-16"
     style={{
       backgroundColor: '#C92D2E',
-      backgroundImage: 'url("https://www.tabichain.com/images/new/bg/1.svg")',
+      backgroundImage: 'url("/images/1.svg")',
       backgroundSize: 'cover',
       backgroundRepeat: 'no-repeat',
       backgroundPosition: 'center',
@@ -136,7 +136,7 @@ export default function RoadmapPage() {
             <div className="relative rounded-xl p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto"
               style={{
                 backgroundColor: '#C92D2E',
-                backgroundImage: 'url("https://www.tabichain.com/images/new/bg/1.svg")',
+                backgroundImage: 'url("/images/1.svg")',
                 backgroundSize: 'cover',
                 backgroundRepeat: 'no-repeat',
                 backgroundPosition: 'center',
@@ -160,7 +160,7 @@ export default function RoadmapPage() {
 
       <div className="mt-20 flex justify-center">
         <Image
-          src="https://www.tabichain.com/images/new/group.png"
+          src="/images/group.png"
           alt="MemeForge Characters"
           width={800}
           height={600}

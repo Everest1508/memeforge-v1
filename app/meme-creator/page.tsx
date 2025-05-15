@@ -56,7 +56,7 @@ export default function MemeCreatorPage() {
       className="mx-auto md:px-24 py-12 px-4 font-[Melon] pt-28 min-h-screen bg-[#C92D2E] text-white"
       style={{
         backgroundColor: '#C92D2E',
-        backgroundImage: 'url("https://www.tabichain.com/images/new/bg/1.svg")',
+        backgroundImage: 'url("/images/1.svg")',
         backgroundSize: 'cover',
         backgroundRepeat: 'no-repeat',
         backgroundPosition: 'center',

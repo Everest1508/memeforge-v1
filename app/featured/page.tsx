@@ -41,7 +41,7 @@ export default function FeaturedPage() {
       className="mx-auto px-4 sm:px-8 md:px-12 lg:px-20 py-10 sm:py-15 md:py-20 min-h-screen"
       style={{
         backgroundColor: '#C92D2E',
-        backgroundImage: 'url("https://www.tabichain.com/images/new/bg/1.svg")',
+        backgroundImage: 'url("/images/1.svg")',
         backgroundSize: 'cover',
         backgroundRepeat: 'no-repeat',
         backgroundPosition: 'center',
