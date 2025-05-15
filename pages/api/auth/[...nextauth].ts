@@ -1,8 +1,6 @@
-// pages/api/auth/[...nextauth].ts
-
 import NextAuth from "next-auth";
 import TwitterProvider from "next-auth/providers/twitter";
-import { Session, User } from "next-auth"; // Import the correct types for session and user
+import { Session, User, Account, Profile } from "next-auth";
 
 export const authOptions = {
   providers: [
@@ -11,15 +9,35 @@ export const authOptions = {
       clientSecret: process.env.TWITTER_CLIENT_SECRET ?? (() => { throw new Error("TWITTER_CLIENT_SECRET is not defined"); })(),
     }),
   ],
+
+  // Use JWT sessions
+  session: {
+    strategy: "jwt" as const,
+  },
+
   callbacks: {
-    async session({ session, user }: { session: Session; user: User }) {
-      // Add user ID to the session directly
-      if (user?.id) {
-        session.user.id = user.id;  // user.id will be available after login
+    // Add user ID to the token
+    async jwt({ token, user, account, profile }: any) {
+      if (user) {
+        token.id = user.id;
+        token.name = user.name;
+        token.email = user.email;
+      }
+      return token;
+    },
+
+    // Add token info to session
+    async session({ session, token }: any) {
+      if (token) {
+        session.user.id = token.id;
+        session.user.name = token.name;
+        session.user.email = token.email;
       }
       return session;
     },
   },
+
+  secret: process.env.NEXTAUTH_SECRET,
 };
 
 export default NextAuth(authOptions);
