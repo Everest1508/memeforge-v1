@@ -1,6 +1,11 @@
 import { useState } from 'react';
 import { Sticker, TextElement } from '@/types';
-import { Canvas } from 'fabric';
+import { Canvas, Object as FabricObject } from 'fabric';
+import { X } from 'lucide-react';
+
+interface ExtendedFabricObject extends FabricObject {
+  id?: string;
+}
 
 type LayersProps = {
   selectedStickers: Sticker[];
@@ -95,7 +100,7 @@ export default function Layers({
                   key={sticker.instanceId}
                   className="flex justify-between items-center mb-2 max-h-8 h-8 overflow-y-auto"
                 >
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center">
                     <img
                       src={sticker.url}
                       alt={sticker.name}
@@ -104,12 +109,76 @@ export default function Layers({
                     <span>Layer {index + 1}</span>
                   </div>
 
-                  <button
-                    className="text-red-500 hover:text-red-700"
-                    onClick={() => onRemoveSticker(sticker.instanceId)}
-                  >
-                    <img src="/iconx/x-icon.jpg" alt="Remove" className="w-6 h-6 rounded-full drop-shadow-[2px_2px_0px_#000]" />
-                  </button>
+                  <div className="flex items-center gap-5">
+                    <button
+                      className="text-blue-500 hover:text-blue-700"
+                      onClick={() => {
+                        const newStickers = [...selectedStickers];
+                        if (index > 0) {
+                          [newStickers[index], newStickers[index - 1]] = [newStickers[index - 1], newStickers[index]];
+                          onReorderStickers(newStickers);
+                          // Update canvas objects order
+                          if (canvasRef.current) {
+                            const canvas = canvasRef.current;
+                            const objects = canvas.getObjects() as ExtendedFabricObject[];
+                            // Remove all objects from canvas
+                            objects.forEach(obj => canvas.remove(obj));
+                            // Add objects back in the correct order
+                            newStickers.forEach(sticker => {
+                              const obj = objects.find(o => o.id === sticker.instanceId);
+                              if (obj) canvas.add(obj);
+                            });
+                            // Add text objects
+                            selectedTexts.forEach(text => {
+                              const obj = objects.find(o => o.id === text.id);
+                              if (obj) canvas.add(obj);
+                            });
+                            canvas.renderAll();
+                          }
+                        }
+                      }}
+                      disabled={index === 0}
+                    >
+                      ↑
+                    </button>
+                    <button
+                      className="text-blue-500 hover:text-blue-700"
+                      onClick={() => {
+                        const newStickers = [...selectedStickers];
+                        if (index < selectedStickers.length - 1) {
+                          [newStickers[index], newStickers[index + 1]] = [newStickers[index + 1], newStickers[index]];
+                          onReorderStickers(newStickers);
+                          // Update canvas objects order
+                          if (canvasRef.current) {
+                            const canvas = canvasRef.current;
+                            const objects = canvas.getObjects() as ExtendedFabricObject[];
+                            // Remove all objects from canvas
+                            objects.forEach(obj => canvas.remove(obj));
+                            // Add objects back in the correct order
+                            newStickers.forEach(sticker => {
+                              const obj = objects.find(o => o.id === sticker.instanceId);
+                              if (obj) canvas.add(obj);
+                            });
+                            // Add text objects
+                            selectedTexts.forEach(text => {
+                              const obj = objects.find(o => o.id === text.id);
+                              if (obj) canvas.add(obj);
+                            });
+                            canvas.renderAll();
+                          }
+                        }
+                      }}
+                      disabled={index === selectedStickers.length - 1}
+                    >
+                      ↓
+                    </button>
+                    <button
+                      className="text-red-500 hover:text-red-700"
+                      onClick={() => onRemoveSticker(sticker.instanceId)}
+                    >
+                      <X className="w-6 h-6 rounded-full drop-shadow-[2px_2px_0px_#000]" />
+                    </button>
+                  </div>
                 </div>
               ))
             )}
@@ -140,12 +209,76 @@ export default function Layers({
                     {text.text}
                   </span>
 
-                  <button
-                    className="text-red-500 hover:text-red-700"
-                    onClick={() => onRemoveText(text.id)}
-                  >
-                    <img src="/iconx/x-icon.jpg" alt="Remove" className="w-6 h-6 rounded-full drop-shadow-[2px_2px_0px_#000]" />
-                  </button>
+                  <div className="flex items-center gap-5">
+                    <button
+                      className="text-blue-500 hover:text-blue-700"
+                      onClick={() => {
+                        const newTexts = [...selectedTexts];
+                        if (index > 0) {
+                          [newTexts[index], newTexts[index - 1]] = [newTexts[index - 1], newTexts[index]];
+                          onReorderTexts(newTexts);
+                          // Update canvas objects order
+                          if (canvasRef.current) {
+                            const canvas = canvasRef.current;
+                            const objects = canvas.getObjects() as ExtendedFabricObject[];
+                            // Remove all objects from canvas
+                            objects.forEach(obj => canvas.remove(obj));
+                            // Add sticker objects
+                            selectedStickers.forEach(sticker => {
+                              const obj = objects.find(o => o.id === sticker.instanceId);
+                              if (obj) canvas.add(obj);
+                            });
+                            // Add text objects in the correct order
+                            newTexts.forEach(text => {
+                              const obj = objects.find(o => o.id === text.id);
+                              if (obj) canvas.add(obj);
+                            });
+                            canvas.renderAll();
+                          }
+                        }
+                      }}
+                      disabled={index === 0}
+                    >
+                      ↑
+                    </button>
+                    <button
+                      className="text-blue-500 hover:text-blue-700"
+                      onClick={() => {
+                        const newTexts = [...selectedTexts];
+                        if (index < selectedTexts.length - 1) {
+                          [newTexts[index], newTexts[index + 1]] = [newTexts[index + 1], newTexts[index]];
+                          onReorderTexts(newTexts);
+                          // Update canvas objects order
+                          if (canvasRef.current) {
+                            const canvas = canvasRef.current;
+                            const objects = canvas.getObjects() as ExtendedFabricObject[];
+                            // Remove all objects from canvas
+                            objects.forEach(obj => canvas.remove(obj));
+                            // Add sticker objects
+                            selectedStickers.forEach(sticker => {
+                              const obj = objects.find(o => o.id === sticker.instanceId);
+                              if (obj) canvas.add(obj);
+                            });
+                            // Add text objects in the correct order
+                            newTexts.forEach(text => {
+                              const obj = objects.find(o => o.id === text.id);
+                              if (obj) canvas.add(obj);
+                            });
+                            canvas.renderAll();
+                          }
+                        }
+                      }}
+                      disabled={index === selectedTexts.length - 1}
+                    >
+                      ↓
+                    </button>
+                    <button
+                      className="text-red-500 hover:text-red-700"
+                      onClick={() => onRemoveText(text.id)}
+                    >
+                      <X className="w-6 h-6 rounded-full drop-shadow-[2px_2px_0px_#000]" />
+                    </button>
+                  </div>
                 </div>
               ))
             )}
