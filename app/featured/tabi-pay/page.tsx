@@ -42,7 +42,7 @@ const TabiPayStepper: React.FC = () => {
       className="min-h-screen w-full px-6 py-28 flex items-center justify-center text-black"
       style={{
         backgroundColor: '#C92D2E',
-        backgroundImage: 'url("https://www.tabichain.com/images/new/bg/1.svg")',
+        backgroundImage: 'url("/images/1.svg")',
         backgroundSize: 'cover',
         backgroundRepeat: 'no-repeat',
         backgroundPosition: 'center',

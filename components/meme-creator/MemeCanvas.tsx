@@ -315,7 +315,11 @@ const MemeCanvas = ({ selectedStickers, onRemoveSticker, selectedTemplate, selec
     try {
       // Check if the user has already submitted a meme today
       const checkResponse = await axios.get("https://memeforge.mooo.com/check-submission/", {
-        params: { email: email }
+        params: { email: email },
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Cream ${session.data?.user?.encrypted}`,
+        },
       });
 
       if (checkResponse.data.message === "You have already submitted a meme today.") {
@@ -339,13 +343,13 @@ const MemeCanvas = ({ selectedStickers, onRemoveSticker, selectedTemplate, selec
       // Proceed with submitting the meme
       const submissionResponse = await axios.post(
         "https://memeforge.mooo.com/submissions/",
-        encryptData({
+        {
           vercel_blob_url: imageUrl,
-          email: email,
-        }),
+        },
         {
           headers: {
             "Content-Type": "application/json",
+            "Authorization": `Cream ${session.data?.user?.encrypted}`,
           },
         }
       );
@@ -470,7 +474,7 @@ const MemeCanvas = ({ selectedStickers, onRemoveSticker, selectedTemplate, selec
           <div className="bg-white p-6 rounded-lg w-80 text-center drop-shadow-[4px_4px_0px_#000] border border-black"
             style={{
               backgroundColor: '#C92D2E',
-              backgroundImage: 'url("https://www.tabichain.com/images/new/bg/1.svg")',
+              backgroundImage: 'url("/images/1.svg")',
               backgroundSize: 'cover',
               backgroundRepeat: 'no-repeat',
               backgroundPosition: 'center',

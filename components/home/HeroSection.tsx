@@ -17,7 +17,7 @@ const HeroSection = () => {
             duration: 6,
             ease: "easeInOut",
           }}
-          className="w-full h-full bg-[url('https://www.tabichain.com/images/new/bg/2.svg')] bg-cover bg-center"
+          className="w-full h-full bg-[url('/images/2.svg')] bg-cover bg-center"
         />
       </div>
         <div className="container mx-auto px-4 relative z-10">

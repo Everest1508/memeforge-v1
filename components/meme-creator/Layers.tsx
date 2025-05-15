@@ -159,7 +159,7 @@ export default function Layers({
             className="w-80 max-w-full p-6 rounded-2xl border-2 border-black drop-shadow-[2px_2px_0px_#000] text-white"
             style={{
               backgroundColor: '#C92D2E',
-              backgroundImage: 'url("https://www.tabichain.com/images/new/bg/1.svg")',
+              backgroundImage: 'url("/images/1.svg")',
               backgroundSize: 'cover',
               backgroundRepeat: 'no-repeat',
               backgroundPosition: 'center',
