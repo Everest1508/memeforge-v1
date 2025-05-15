@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 interface Step2QuestionsProps {
@@ -8,16 +8,19 @@ interface Step2QuestionsProps {
   onPrevious: () => void;
 }
 
-type FormData = {
-  question1: string;
-  question2: string;
-  question3: string;
-};
+interface Option {
+  id: number;
+  option_text: string;
+}
 
-const correctAnswers = {
-  question1: 'Pepe',
-  question2: 'Reddit',
-  question3: 'They make me laugh',
+interface Question {
+  id: number;
+  question_text: string;
+  options: Option[];
+}
+
+type FormData = {
+  [key: string]: number; // key is question ID (as string), value is selected option ID
 };
 
 const Step2Questions: React.FC<Step2QuestionsProps> = ({ onNext, onPrevious }) => {
@@ -28,52 +31,78 @@ const Step2Questions: React.FC<Step2QuestionsProps> = ({ onNext, onPrevious }) =
     watch,
   } = useForm<FormData>();
 
+  const [questions, setQuestions] = useState<Question[]>([]);
   const [submitted, setSubmitted] = useState(false);
+  const [incorrectIds, setIncorrectIds] = useState<Set<number>>(new Set());
 
   const values = watch();
 
-  const onSubmit = (data: FormData) => {
-    setSubmitted(true);
-    const allCorrect = Object.entries(correctAnswers).every(
-      ([key, val]) => data[key as keyof FormData] === val
-    );
-    setTimeout(() => {
-      if (allCorrect) {
-        onNext();
-      }
-    }, 150); // small delay
+  useEffect(() => {
+    fetch('https://memeforge.mooo.com/api/mcq/1/random/')
+      .then(res => res.json())
+      .then(setQuestions)
+      .catch(console.error);
+  }, []);
+
+  const checkAnswer = async (questionId: number, selectedOptionId: number) => {
+    const res = await fetch('https://memeforge.mooo.com/api/mcq/check/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        question_id: questionId,
+        selected_option_id: selectedOptionId,
+      }),
+    });
+    const data = await res.json();
+    return data.correct;
   };
 
-  const isWrong = (name: keyof FormData) =>
-    submitted && values[name] && values[name] !== correctAnswers[name];
+  const onSubmit = async (data: FormData) => {
+    setSubmitted(true);
+    const incorrect = new Set<number>();
+
+    await Promise.all(
+      questions.map(async (q) => {
+        const selected = data[q.id];
+        const isCorrect = await checkAnswer(q.id, selected);
+        if (!isCorrect) incorrect.add(q.id);
+      })
+    );
+
+    setIncorrectIds(incorrect);
+
+    if (incorrect.size === 0) {
+      setTimeout(() => onNext(), 200);
+    }
+  };
 
   const Option = ({
-    value,
-    name,
+    option,
+    questionId,
   }: {
-    value: string;
-    name: keyof FormData;
+    option: Option;
+    questionId: number;
   }) => {
-    const isSelected = values[name] === value;
-    const isCorrect = correctAnswers[name] === value;
-    const showCorrect = submitted && isSelected && isCorrect;
-    const showWrong = submitted && isSelected && !isCorrect;
+    const selected = values[questionId];
+    const isSelected = selected === option.id;
+    const isWrong = submitted && isSelected && incorrectIds.has(questionId);
+    const isCorrect = submitted && isSelected && !incorrectIds.has(questionId);
 
     return (
       <label
         className={`flex items-center px-4 py-3 border rounded-lg shadow-sm cursor-pointer transition duration-150
-          ${showCorrect ? 'bg-green-100 border-green-500' : ''}
-          ${showWrong ? 'bg-red-100 border-red-500' : ''}
+          ${isCorrect ? 'bg-green-100 border-green-500' : ''}
+          ${isWrong ? 'bg-red-100 border-red-500' : ''}
           ${!isSelected ? 'bg-white border-gray-300' : ''}
           hover:shadow-md`}
       >
         <input
           type="radio"
-          value={value}
-          {...register(name, { required: true })}
+          value={option.id}
+          {...register(String(questionId), { required: true })}
           className="mr-3"
         />
-        <span className="text-sm">{value}</span>
+        <span className="text-sm">{option.option_text}</span>
       </label>
     );
   };
@@ -85,53 +114,24 @@ const Step2Questions: React.FC<Step2QuestionsProps> = ({ onNext, onPrevious }) =
       </h2>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-10">
-        {/* Question 1 */}
-        <div>
-          <h3 className="text-lg font-semibold mb-3">1. Your favorite meme?</h3>
-          <div className="grid gap-3 text-black">
-            <Option value="Doge" name="question1" />
-            <Option value="Pepe" name="question1" />
-            <Option value="Troll Face" name="question1" />
+        {questions.map((q, index) => (
+          <div key={q.id}>
+            <h3 className="text-lg font-semibold mb-3">
+              {index + 1}. {q.question_text}
+            </h3>
+            <div className="grid gap-3 text-black">
+              {q.options.map((opt) => (
+                <Option key={opt.id} option={opt} questionId={q.id} />
+              ))}
+            </div>
+            {errors[String(q.id)] && (
+              <p className="text-gray-100 mt-2 text-sm">Please select one</p>
+            )}
+            {submitted && incorrectIds.has(q.id) && (
+              <p className="text-gray-100 mt-2 text-sm">❌ Incorrect. Please try again.</p>
+            )}
           </div>
-          {errors.question1 && (
-            <p className="text-gray-100 mt-2 text-sm">Please select one</p>
-          )}
-          {isWrong('question1') && (
-            <p className="text-gray-100 mt-2 text-sm">❌ Incorrect. Please try again.</p>
-          )}
-        </div>
-
-        {/* Question 2 */}
-        <div>
-          <h3 className="text-lg font-semibold mb-3">2. Best meme platform?</h3>
-          <div className="grid gap-3 text-black">
-            <Option value="Reddit" name="question2" />
-            <Option value="Instagram" name="question2" />
-            <Option value="X (Twitter)" name="question2" />
-          </div>
-          {errors.question2 && (
-            <p className="text-gray-100 mt-2 text-sm">Please select one</p>
-          )}
-          {isWrong('question2') && (
-            <p className="text-gray-100 mt-2 text-sm">❌ Incorrect. Please try again.</p>
-          )}
-        </div>
-
-        {/* Question 3 */}
-        <div>
-          <h3 className="text-lg font-semibold mb-3">3. Why do you love memes?</h3>
-          <div className="grid gap-3 text-black">
-            <Option value="They make me laugh" name="question3" />
-            <Option value="They explain emotions" name="question3" />
-            <Option value="They go viral fast" name="question3" />
-          </div>
-          {errors.question3 && (
-            <p className="text-gray-100 mt-2 text-sm">Please select one</p>
-          )}
-          {isWrong('question3') && (
-            <p className="text-gray-100 mt-2 text-sm">❌ Incorrect. Please try again.</p>
-          )}
-        </div>
+        ))}
 
         {/* Navigation Buttons */}
         <div className="flex justify-between pt-6 pb-14 md:pb-6">
