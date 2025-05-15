@@ -7,6 +7,8 @@ import axios from "axios";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { signIn, useSession } from "next-auth/react";
+import { encryptData } from "@/utils/encrypt";
+import { enc } from "crypto-js";
 
 
 interface MemeCanvasProps {
@@ -301,7 +303,7 @@ const MemeCanvas = ({ selectedStickers, onRemoveSticker, selectedTemplate, selec
       return; // Stop further execution
     }
 
-    const email = session.data?.user?.email || "anonymous@memeforge.lol";
+    const email = session.data?.user?.email || "";
 
     const canvas = fabricCanvasRef.current;
     const dataURL = canvas.toDataURL({
@@ -332,17 +334,15 @@ const MemeCanvas = ({ selectedStickers, onRemoveSticker, selectedTemplate, selec
         }
       );
 
-      console.log("Meme uploaded successfully!", uploadResponse.data);
 
       const imageUrl = uploadResponse.data.url;
-
       // Proceed with submitting the meme
       const submissionResponse = await axios.post(
         "https://memeforge.mooo.com/submissions/",
-        {
+        encryptData({
           vercel_blob_url: imageUrl,
           email: email,
-        },
+        }),
         {
           headers: {
             "Content-Type": "application/json",
