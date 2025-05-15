@@ -10,6 +10,7 @@ declare module "next-auth" {
       name?: string | null;
       email?: string | null;
       image?: string | null;
+      encrypted?: string; // Add the 'encrypted' field
     };
   }
 

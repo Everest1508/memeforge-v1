@@ -1,6 +1,7 @@
 import NextAuth from "next-auth";
 import TwitterProvider from "next-auth/providers/twitter";
-import { Session, User, Account, Profile } from "next-auth";
+import { Session, User } from "next-auth";
+import { encryptData } from "@/utils/encrypt"; // Adjust path
 
 export const authOptions = {
   providers: [
@@ -10,14 +11,12 @@ export const authOptions = {
     }),
   ],
 
-  // Use JWT sessions
   session: {
     strategy: "jwt" as const,
   },
 
   callbacks: {
-    // Add user ID to the token
-    async jwt({ token, user, account, profile }: any) {
+    async jwt({ token, user }: { token: any; user?: User }) {
       if (user) {
         token.id = user.id;
         token.name = user.name;
@@ -26,12 +25,15 @@ export const authOptions = {
       return token;
     },
 
-    // Add token info to session
-    async session({ session, token }: any) {
+    async session({ session, token }: { session: Session; token: any }) {
       if (token) {
-        session.user.id = token.id;
-        session.user.name = token.name;
-        session.user.email = token.email;
+        const encrypted = encryptData({
+          id: token.id,
+          name: token.name,
+          email: token.email,
+        });
+
+        session.user.encrypted = encrypted;
       }
       return session;
     },
