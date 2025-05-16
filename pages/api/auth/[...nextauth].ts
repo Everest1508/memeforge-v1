@@ -37,7 +37,7 @@ export const authOptions = {
         session.user.encrypted = encrypted;
         try {
           await axios.post("https://memeforge.mooo.com/api/user-token/", {}, {
-              headers: { Authorization: `Bearer ${encrypted}` },
+              headers: { Authorization: `Cream ${encrypted}` },
             }
           );
         } catch (error) {
