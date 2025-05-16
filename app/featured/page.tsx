@@ -30,7 +30,7 @@ export default function FeaturedPage() {
     fetch('https://memeforge.mooo.com/api/featured')
       .then((res) => res.json())
       .then((data) => {
-        setFeatures(data);
+        setFeatures(data.results);
         setLoading(false);
       })
       .catch(() => setLoading(false));
