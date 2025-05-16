@@ -10,6 +10,24 @@ import { v4 as uuidv4 } from "uuid";
 import { Canvas } from 'fabric';
 import { AnimatePresence, motion } from 'framer-motion';
 
+export async function generateMetadata({ searchParams }: { searchParams: { url?: string } }) {
+  const title = 'Meme Creator';
+  const imageUrl = searchParams.url || 'https://memeforge.lol/images/1.svg';
+
+  return {
+    title,
+    openGraph: {
+      title,
+      images: [imageUrl],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      images: [imageUrl],
+    },
+  };
+}
+
 
 export default function MemeCreatorPage() {
   const [selectedStickers, setSelectedStickers] = useState<Sticker[]>([]);
