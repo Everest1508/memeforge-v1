@@ -1,34 +1,22 @@
-// app/page.tsx or any client/server component
-'use client';
+// app/og/page.tsx or page.js
 
-import { useEffect, useState } from 'react';
-import { encryptData } from '@/utils/encrypt';
+import { Metadata } from 'next';
 
-export default function Home() {
-  const [result, setResult] = useState<any>(null);
+export async function generateMetadata({ searchParams }: { searchParams: { title?: string } }): Promise<Metadata> {
+  const title = searchParams.title || 'My OG Page';
 
-  useEffect(() => {
-    const fetchDecryptedData = async () => {
-      const dataToSend = { text: 'Hello from Next.js', user_id: 123 };
-      const token = encryptData(dataToSend);
+  return {
+    title,
+    openGraph: {
+      images: [`/api/og-image?imageUrl=${encodeURIComponent(title)}`],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      images: [`/api/og-image?imageUrl=${encodeURIComponent(title)}`],
+    },
+  };
+}
 
-      const response = await fetch(
-        `http://127.0.0.1:8000/api/decode-message/?token=${token}`
-      );
-
-      const json = await response.json();
-      setResult(json);
-    };
-
-    fetchDecryptedData();
-  }, []);
-
-  return (
-    <main className="p-4">
-      <h1 className="text-xl font-bold mb-4">Encrypted Message Example</h1>
-      <pre className="bg-gray-100 p-2 rounded">
-        {result ? JSON.stringify(result, null, 2) : 'Loading...'}
-      </pre>
-    </main>
-  );
+export default function Page({ searchParams }: { searchParams: { title?: string } }) {
+  return <div>OG Page Preview for {searchParams.title || 'My OG Page'}</div>;
 }
