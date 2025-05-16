@@ -26,7 +26,7 @@ export default function RoadmapPage() {
     fetch('https://memeforge.mooo.com/api/roadmap')
       .then(res => res.json())
       .then(data => {
-        setMilestones(data);
+        setMilestones(data.results);
         setLoading(false);
       })
       .catch(() => setLoading(false));
