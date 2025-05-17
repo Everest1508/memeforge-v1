@@ -3,13 +3,20 @@ import HeroSection from '@/components/home/HeroSection';
 import FeaturesSection from '@/components/home/FeaturesSection';
 import CallToActionSection from '@/components/home/CallToActionSection';
 import Head from 'next/head';
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 
 export default function Home() {
   const [showIntro, setShowIntro] = useState(true);
   const [showEnter, setShowEnter] = useState(true);
-  const [isVideoLoading, setIsVideoLoading] = useState(false);
+  const [isVideoLoading, setIsVideoLoading] = useState(true);
   const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    // Force video loading
+    if (videoRef.current) {
+      videoRef.current.load();
+    }
+  }, []);
 
   const handleEnterClick = () => {
     if (isVideoLoading) return;
@@ -21,6 +28,12 @@ export default function Home() {
   };
 
   const handleVideoLoaded = () => {
+    console.log('Video loaded');
+    setIsVideoLoading(false);
+  };
+
+  const handleVideoError = () => {
+    console.error('Video loading error');
     setIsVideoLoading(false);
   };
 
@@ -52,7 +65,7 @@ export default function Home() {
           {showEnter && (
             <div
               className={`absolute inset-0 bg-black flex flex-col items-center justify-center z-20 ${
-                isVideoLoading ? 'cursor-not-allowed ' : 'cursor-pointer'
+                isVideoLoading ? 'cursor-not-allowed' : 'cursor-pointer'
               }`}
               onClick={handleEnterClick}
             >
@@ -85,13 +98,14 @@ export default function Home() {
 
           {/* Background video */}
           <video
-            preload="auto"
             ref={videoRef}
             autoPlay={false}
             muted
             playsInline
             onEnded={handleVideoEnd}
             onLoadedData={handleVideoLoaded}
+            onCanPlay={handleVideoLoaded}
+            onError={handleVideoError}
             className="w-full h-full object-cover md:bg-center bg-[left_50%_top]"
           >
             <source src="/intro.mp4" type="video/mp4" />

@@ -120,19 +120,32 @@ export default function Layers({
                           // Update canvas objects order
                           if (canvasRef.current) {
                             const canvas = canvasRef.current;
-                            const objects = canvas.getObjects() as ExtendedFabricObject[];
+                            const backgroundColor = canvas.backgroundColor;
+                            const backgroundImage = canvas.getObjects().find(obj => !obj.selectable && !obj.evented); // Find background image
+                            const objects = canvas.getObjects().filter(obj => obj.selectable || obj.evented) as ExtendedFabricObject[];
+                            
                             // Remove all objects from canvas
                             objects.forEach(obj => canvas.remove(obj));
+                            
+                            // Add background image back if it exists
+                            if (backgroundImage) {
+                              canvas.add(backgroundImage);
+                              canvas.sendObjectToBack(backgroundImage);
+                            }
+                            
                             // Add objects back in the correct order
                             newStickers.forEach(sticker => {
                               const obj = objects.find(o => o.id === sticker.instanceId);
                               if (obj) canvas.add(obj);
                             });
+                            
                             // Add text objects
                             selectedTexts.forEach(text => {
                               const obj = objects.find(o => o.id === text.id);
                               if (obj) canvas.add(obj);
                             });
+                            
+                            canvas.backgroundColor = backgroundColor;
                             canvas.renderAll();
                           }
                         }
@@ -151,19 +164,32 @@ export default function Layers({
                           // Update canvas objects order
                           if (canvasRef.current) {
                             const canvas = canvasRef.current;
-                            const objects = canvas.getObjects() as ExtendedFabricObject[];
+                            const backgroundColor = canvas.backgroundColor;
+                            const backgroundImage = canvas.getObjects().find(obj => !obj.selectable && !obj.evented); // Find background image
+                            const objects = canvas.getObjects().filter(obj => obj.selectable || obj.evented) as ExtendedFabricObject[];
+                            
                             // Remove all objects from canvas
                             objects.forEach(obj => canvas.remove(obj));
+                            
+                            // Add background image back if it exists
+                            if (backgroundImage) {
+                              canvas.add(backgroundImage);
+                              canvas.sendObjectToBack(backgroundImage);
+                            }
+                            
                             // Add objects back in the correct order
                             newStickers.forEach(sticker => {
                               const obj = objects.find(o => o.id === sticker.instanceId);
                               if (obj) canvas.add(obj);
                             });
+                            
                             // Add text objects
                             selectedTexts.forEach(text => {
                               const obj = objects.find(o => o.id === text.id);
                               if (obj) canvas.add(obj);
                             });
+                            
+                            canvas.backgroundColor = backgroundColor;
                             canvas.renderAll();
                           }
                         }
@@ -220,19 +246,26 @@ export default function Layers({
                           // Update canvas objects order
                           if (canvasRef.current) {
                             const canvas = canvasRef.current;
-                            const objects = canvas.getObjects() as ExtendedFabricObject[];
+                            const backgroundColor = canvas.backgroundColor;
+                            const backgroundImage = canvas.getObjects().find(obj => !obj.selectable && !obj.evented); // Find background image
+                            const objects = canvas.getObjects().filter(obj => obj.selectable || obj.evented) as ExtendedFabricObject[];
+                            
                             // Remove all objects from canvas
                             objects.forEach(obj => canvas.remove(obj));
-                            // Add sticker objects
-                            selectedStickers.forEach(sticker => {
-                              const obj = objects.find(o => o.id === sticker.instanceId);
-                              if (obj) canvas.add(obj);
-                            });
-                            // Add text objects in the correct order
+                            
+                            // Add background image back if it exists
+                            if (backgroundImage) {
+                              canvas.add(backgroundImage);
+                              canvas.sendObjectToBack(backgroundImage);
+                            }
+                            
+                            // Add objects back in the correct order
                             newTexts.forEach(text => {
                               const obj = objects.find(o => o.id === text.id);
                               if (obj) canvas.add(obj);
                             });
+                            
+                            canvas.backgroundColor = backgroundColor;
                             canvas.renderAll();
                           }
                         }
@@ -251,19 +284,26 @@ export default function Layers({
                           // Update canvas objects order
                           if (canvasRef.current) {
                             const canvas = canvasRef.current;
-                            const objects = canvas.getObjects() as ExtendedFabricObject[];
+                            const backgroundColor = canvas.backgroundColor;
+                            const backgroundImage = canvas.getObjects().find(obj => !obj.selectable && !obj.evented); // Find background image
+                            const objects = canvas.getObjects().filter(obj => obj.selectable || obj.evented) as ExtendedFabricObject[];
+                            
                             // Remove all objects from canvas
                             objects.forEach(obj => canvas.remove(obj));
-                            // Add sticker objects
-                            selectedStickers.forEach(sticker => {
-                              const obj = objects.find(o => o.id === sticker.instanceId);
-                              if (obj) canvas.add(obj);
-                            });
-                            // Add text objects in the correct order
+                            
+                            // Add background image back if it exists
+                            if (backgroundImage) {
+                              canvas.add(backgroundImage);
+                              canvas.sendObjectToBack(backgroundImage);
+                            }
+                            
+                            // Add objects back in the correct order
                             newTexts.forEach(text => {
                               const obj = objects.find(o => o.id === text.id);
                               if (obj) canvas.add(obj);
                             });
+                            
+                            canvas.backgroundColor = backgroundColor;
                             canvas.renderAll();
                           }
                         }
