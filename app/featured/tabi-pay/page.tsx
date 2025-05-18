@@ -14,6 +14,9 @@ const TabiPayStepper: React.FC = () => {
     name: '',
     username: '',
   });
+  const [overlayId, setOverlayId] = useState<string | null>(null);
+  const [cardImageUrl, setCardImageUrl] = useState<string | null>(null);
+
 
   const handleUserInfoChange = (info: { name: string; username: string }) => {
     setUserInfo(info);
@@ -59,8 +62,13 @@ const TabiPayStepper: React.FC = () => {
             handleUserInfoChange={handleUserInfoChange}
           />
         )}
-        {step === 4 && <Step4Progress progress={progress} onNext={handleNextStep} />}
-        {step === 5 && <Step5Card onShare={handleShare} onDownload={handleDownload} userInfo={userInfo}/>}
+        {step === 4 && <Step4Progress 
+                            progress={progress} 
+                            onNext={handleNextStep} 
+                            userInfo={userInfo}
+                            setOverlayId={setOverlayId}
+                            setCardImageUrl={setCardImageUrl}/>}
+        {step === 5 && <Step5Card onShare={handleShare} onDownload={handleDownload} userInfo={userInfo} overlayId={overlayId} cardImageUrl={cardImageUrl} />}
       </div>
       <img
       src="/images/featured/4.png" // Replace with your actual image path

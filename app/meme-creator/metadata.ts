@@ -1,4 +1,3 @@
-// app/meme-creator/metadata.ts
 import type { Metadata } from 'next';
 
 export function generateMetadata({ searchParams }: { searchParams: { url?: string } }): Metadata {

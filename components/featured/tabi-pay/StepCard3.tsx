@@ -34,7 +34,7 @@ const Step3UserInfo: React.FC<Step3UserInfoProps> = ({
   }, [session, setValue]);
 
   const onSubmit = (data: FormData) => {
-    handleUserInfoChange(data); // ✅ Pass to parent stepper
+    handleUserInfoChange(data);
     onNext();
   };
 
