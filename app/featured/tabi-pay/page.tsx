@@ -39,6 +39,7 @@ const TabiPayStepper: React.FC = () => {
           setCanCreate(true);
         } else {
           setCanCreate(false);
+          setOverlayId(res.data.overlay_id);
           const createdAt = new Date(res.data.created_at);
           const expiryDate = new Date(createdAt.getTime() + 7 * 24 * 60 * 60 * 1000);
           const timeRemaining = formatDistanceToNowStrict(expiryDate, { addSuffix: true });
