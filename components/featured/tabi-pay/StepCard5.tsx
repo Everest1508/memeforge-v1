@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useSession, signIn } from 'next-auth/react';
 import { Loader2, Share2, Download, Trophy, LogIn } from 'lucide-react';
 
@@ -11,39 +11,15 @@ interface Step5CardProps {
     name: string;
     username: string;
   };
+  overlayId: string | null;
+  cardImageUrl: string | null;
 }
 
-const Step5Card: React.FC<Step5CardProps> = ({ userInfo }) => {
+const Step5Card: React.FC<Step5CardProps> = ({ userInfo, overlayId, cardImageUrl }) => {
   const { data: session, status } = useSession();
-  const [cardImageUrl, setCardImageUrl] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  const name = userInfo.name;
-  const username = userInfo.username;
-  const email = session?.user?.email || '';
-
-  useEffect(() => {
-    const fetchCard = async () => {
-      try {
-        const res = await fetch('/api/tabi-card', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, username, email }),
-        });
-
-        const data = await res.json();
-        setCardImageUrl(data.cardImageUrl);
-      } catch (err) {
-        console.error('Failed to fetch card image:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchCard();
-  }, [name, username, email]);
 
   const showLoginPrompt = status !== 'loading' && !session;
+  const loading = !cardImageUrl;
 
   const handleDownload = async () => {
     if (!cardImageUrl) return;
@@ -59,10 +35,12 @@ const Step5Card: React.FC<Step5CardProps> = ({ userInfo }) => {
   };
 
   const handleShare = () => {
-    // if (!cardImageUrl) return;
-
-    const tweetText = encodeURIComponent(`Check out my new Tabi Pay card! 💳🚀\nJoin me at https://tabichain.com`);
-    const tweetUrl = `https://twitter.com/intent/tweet?text=${tweetText}&url=${encodeURIComponent(cardImageUrl || 'https://c2d9-103-178-126-236.ngrok-free.app/media/images/8.png')}`;
+    const tweetText = encodeURIComponent(
+      `Check out my new Tabi Pay card! 💳🚀\nJoin me at https://tabichain.com`
+    );
+    const tweetUrl = `https://twitter.com/intent/tweet?text=${tweetText}&url=${encodeURIComponent(
+      cardImageUrl || 'https://tabichain.com'
+    )}`;
 
     window.open(tweetUrl, '_blank');
   };
@@ -75,20 +53,19 @@ const Step5Card: React.FC<Step5CardProps> = ({ userInfo }) => {
         <div className="animate-pulse bg-black/10 h-48 rounded-lg flex items-center justify-center">
           <Loader2 className="w-6 h-6 animate-spin text-black/50" />
         </div>
-      ) : cardImageUrl ? (
+      ) : (
         <img
-          src={cardImageUrl}
+          src={cardImageUrl!}
           alt="Your Tabi Pay Card"
           className="w-full rounded-lg border border-black/10 shadow-md"
         />
-      ) : (
-        <p className="text-sm text-black/60">Couldn’t load your card. Please try again later.</p>
       )}
 
       <div className="flex gap-4 justify-center">
         <button
           onClick={handleShare}
           className="flex items-center gap-2 bg-[#C92D2E] text-white px-6 py-2 rounded-md font-semibold shadow hover:bg-red-600 transition"
+          disabled={loading}
         >
           <Share2 className="w-4 h-4" />
           Share on Twitter
@@ -96,6 +73,7 @@ const Step5Card: React.FC<Step5CardProps> = ({ userInfo }) => {
         <button
           onClick={handleDownload}
           className="flex items-center gap-2 bg-black text-white px-6 py-2 rounded-md font-semibold shadow hover:bg-gray-800 transition"
+          disabled={loading}
         >
           <Download className="w-4 h-4" />
           Download Card

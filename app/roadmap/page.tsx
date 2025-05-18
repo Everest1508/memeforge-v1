@@ -160,7 +160,7 @@ export default function RoadmapPage() {
 
       <div className="mt-20 flex justify-center">
         <Image
-          src="/images/group.png"
+          src="/images/roadmap.png"
           alt="MemeForge Characters"
           width={800}
           height={600}
