@@ -15,8 +15,9 @@ interface Step5CardProps {
   cardImageUrl: string | null;
 }
 
-const Step5Card: React.FC<Step5CardProps> = ({ userInfo, overlayId, cardImageUrl }) => {
+const Step5Card: React.FC<Step5CardProps> = ({ userInfo, overlayId }) => {
   const { data: session, status } = useSession();
+  const cardImageUrl = `https://memeforge.mooo.com/api/tabipay-cards/${overlayId}`;
 
   const showLoginPrompt = status !== 'loading' && !session;
   const loading = !cardImageUrl;
