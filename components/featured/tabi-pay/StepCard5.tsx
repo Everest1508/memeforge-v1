@@ -17,7 +17,7 @@ interface Step5CardProps {
 
 const Step5Card: React.FC<Step5CardProps> = ({ userInfo, overlayId }) => {
   const { data: session, status } = useSession();
-  const cardImageUrl = `https://memeforge.mooo.com/api/tabipay-cards/${overlayId}`;
+  const cardImageUrl = `https://memeforge.mooo.com/api/tabipay-cards/${overlayId}.png`;
 
   const showLoginPrompt = status !== 'loading' && !session;
   const loading = !cardImageUrl;
@@ -40,7 +40,7 @@ const Step5Card: React.FC<Step5CardProps> = ({ userInfo, overlayId }) => {
       `Check out my new Tabi Pay card! 💳🚀\nJoin me at https://memeforge.lol`
     );
     const tweetUrl = `https://twitter.com/intent/tweet?text=${tweetText}&url=${encodeURIComponent(
-      `https://memeforge.mooo.com/api/tabipay-cards/${overlayId}` || 'https://tabichain.com'
+      `https://memeforge.mooo.com/api/tabipay-cards/${overlayId}.png` || 'https://tabichain.com'
     )}`;
 
     window.open(tweetUrl, '_blank');

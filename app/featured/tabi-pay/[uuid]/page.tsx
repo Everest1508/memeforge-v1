@@ -15,10 +15,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     openGraph: {
       title: `TabiPay Card`,
       description: `Check out personalized TabiPay card!`,
-      url: `https://memeforge.mooo.com/api/tabipay-cards/${params.uuid}/`,
+      url: `https://memeforge.mooo.com/api/tabipay-cards/${params.uuid}.png`,
       images: [
         {
-          url: `https://memeforge.mooo.com/api/tabipay-cards/${params.uuid}/`, // e.g., full URL to the image
+          url: `https://memeforge.mooo.com/api/tabipay-cards/${params.uuid}.png`, // e.g., full URL to the image
           width: 1200,
           height: 630,
           alt: `Tabipay Card`,
@@ -29,16 +29,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       card: 'summary_large_image',
       title: `TabiPay Card`,
       description: `Check out personalized TabiPay card!`,
-      images: [`https://memeforge.mooo.com/api/tabipay-cards/${params.uuid}/`],
+      images: [`https://memeforge.mooo.com/api/tabipay-cards/${params.uuid}.png`],
     },
   };
 }
 
 export default function TabiPayCardPage({ params }: Props) {
+    const cardUrl = `https://memeforge.mooo.com/api/tabipay-cards/${params.uuid}.png`;
   return (
     <div className="min-h-screen text-white flex justify-center items-center p-10">
       <p>Loading TabiPay card for ID: {params.uuid}</p>
-      https://memeforge.mooo.com/api/tabipay-cards/${params.uuid}/
+      <a href={cardUrl}> </a>
     </div>
   );
 }

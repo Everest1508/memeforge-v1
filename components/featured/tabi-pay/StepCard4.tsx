@@ -49,7 +49,7 @@ const Step4Progress: React.FC<Step4ProgressProps> = ({ progress, onNext, userInf
 
         // Step 2: Get the card image by overlay ID
         const fetchCardResponse = await fetch(
-          `https://memeforge.mooo.com/api/tabipay-cards/${overlayId}/`
+          `https://memeforge.mooo.com/api/tabipay-cards/${overlayId}.png`
         );
 
         if (!fetchCardResponse.ok) {
