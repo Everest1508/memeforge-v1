@@ -25,7 +25,7 @@ const TabiPayStepper: React.FC = () => {
     const checkCanCreate = async () => {
       if (status !== 'authenticated') {
         setCanCreate(true); // allow flow for guests or unauthenticated users
-        return;
+        return; 
       }
 
       try {
@@ -72,14 +72,40 @@ const TabiPayStepper: React.FC = () => {
 
   if (canCreate === false && step < 4) {
     return (
-      <div className="min-h-screen flex items-center justify-center text-white px-6 py-28 bg-[#C92D2E] bg-cover bg-center" style={{ backgroundImage: 'url("/images/1.svg")' }}>
-        <div className="max-w-xl text-center">
-          <h2 className="text-2xl font-bold mb-4">You’ve already created a card recently!</h2>
-          <p className="mb-6">{cooldownMessage}</p>
+      <div
+        className="min-h-screen w-full flex items-center justify-center px-6 py-28 text-white"
+        style={{
+          backgroundColor: '#C92D2E',
+          backgroundImage: 'url("/images/1.svg")',
+          backgroundSize: 'cover',
+          backgroundRepeat: 'no-repeat',
+          backgroundPosition: 'center',
+          backgroundAttachment: 'fixed',
+        }}
+      >
+        <div className="bg-white/10 backdrop-blur-lg border border-white/20 shadow-2xl rounded-2xl max-w-md p-8 text-center text-white animate-fade-in">
+          <h2 className="text-3xl font-bold mb-4">⏳ Hold up!</h2>
+          <p className="text-lg mb-4 font-medium">
+            You’ve already created a TabiPay card recently.
+          </p>
+          <p className="text-sm text-white/80 mb-6">{cooldownMessage}</p>
+          <button
+            onClick={() => setStep(5)}
+            className="px-6 py-2 rounded-full bg-white text-[#C92D2E] font-semibold shadow hover:bg-white/90 transition"
+          >
+            View your existing card
+          </button>
         </div>
+
+        <img
+          src="/images/featured/4.png"
+          alt="Tabi Character"
+          className="fixed bottom-0 right-0 w-52 sm:w-32 md:w-96 opacity-90 pointer-events-none select-none"
+        />
       </div>
     );
   }
+
 
   return (
     <div
