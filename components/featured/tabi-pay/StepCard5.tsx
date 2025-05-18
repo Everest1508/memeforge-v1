@@ -36,10 +36,10 @@ const Step5Card: React.FC<Step5CardProps> = ({ userInfo, overlayId, cardImageUrl
 
   const handleShare = () => {
     const tweetText = encodeURIComponent(
-      `Check out my new Tabi Pay card! 💳🚀\nJoin me at https://tabichain.com`
+      `Check out my new Tabi Pay card! 💳🚀\nJoin me at https://memeforge.lol`
     );
     const tweetUrl = `https://twitter.com/intent/tweet?text=${tweetText}&url=${encodeURIComponent(
-      `https://memeforge.mooo.lol/api/tabipay-cards/${overlayId}` || 'https://tabichain.com'
+      `https://memeforge.mooo.com/api/tabipay-cards/${overlayId}` || 'https://tabichain.com'
     )}`;
 
     window.open(tweetUrl, '_blank');
