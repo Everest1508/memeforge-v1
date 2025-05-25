@@ -1,7 +1,7 @@
 "use client";
 
-import { useRef, useState } from 'react';
-import { Sticker, Template, TextElement } from '@/types';
+import { useRef, useState, useEffect } from 'react';
+import { Sticker, Template, TextElement, BrandElement } from '@/types';
 import MemeCanvas from '@/components/meme-creator/MemeCanvas';
 import Toolbar from '@/components/meme-creator/Toolbar';
 import TemplateSelector from '@/components/meme-creator/TemplateSelector';
@@ -15,11 +15,81 @@ export default function MemeCreatorPage() {
   const [selectedStickers, setSelectedStickers] = useState<Sticker[]>([]);
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
   const [selectedTexts, setSelectedTexts] = useState<TextElement[]>([]);
+  const [brandElements, setBrandElements] = useState<BrandElement[]>([]);
 
   const fabricCanvasRef = useRef<Canvas | null>(null);
 
   const [isStickerOpen, setIsStickerOpen] = useState(true); // For toggling Stickers section
   const [isLayerOpen, setIsLayerOpen] = useState(true); // For toggling Layers section
+
+  // 1. Добавляю состояние для размеров canvas
+  const [canvasSize, setCanvasSize] = useState({ width: 600, height: 600 });
+
+  // Добавляем логотип и надпись как обычные элементы при первом рендере
+  useEffect(() => {
+    // Проверяем, есть ли уже логотип и надпись
+    setSelectedStickers(prev => {
+      if (!prev.some(s => s.id === 'memeforge-logo')) {
+        return [
+          {
+            id: 'memeforge-logo',
+            url: '/brand-logo.png',
+            name: 'MemeForge Logo',
+            categoryId: 'brand',
+            instanceId: 'memeforge-logo',
+            left: 500,
+            top: 10
+          },
+          ...prev
+        ];
+      }
+      return prev;
+    });
+    setSelectedTexts(prev => {
+      if (!prev.some(t => t.id === 'memeforge-website')) {
+        return [
+          {
+            id: 'memeforge-website',
+            text: 'www.MemeForge.lol',
+            left: 10,
+            top: 560,
+            fontSize: 24,
+            color: '#000',
+            fontFamily: 'Arial',
+            borderColor: '#000',
+            fontWeight: 'bold',
+            backgroundColor: '#FFD600'
+          },
+          ...prev
+        ];
+      }
+      return prev;
+    });
+  }, []);
+
+  // 2. Функция для обновления позиций бренд-элементов
+  const updateBrandPositions = (width: number, height: number) => {
+    setSelectedStickers(prev => prev.map(s =>
+      s.id === 'memeforge-logo'
+        ? { ...s, left: 0, top: 0 }
+        : s
+    ));
+    setSelectedTexts(prev => prev.map(t =>
+      t.id === 'memeforge-website'
+        ? { ...t, left: 10, top: height - 40, color: '#000', backgroundColor: '#FFD600' }
+        : t
+    ));
+  };
+
+  // 3. useEffect для обновления позиций при изменении размера canvas
+  useEffect(() => {
+    setSelectedStickers(prev => prev.map(s =>
+      s.id === 'memeforge-logo' ? { ...s, left: 0, top: 0 } : s
+    ));
+    setSelectedTexts(prev => prev.map(t =>
+      t.id === 'memeforge-website' ? { ...t, left: 10, top: canvasSize.height - 40 } : t
+    ));
+  }, [canvasSize.width, canvasSize.height]);
 
   const handleAddText = (text: TextElement) => {
     const uniqueText = { ...text, id: uuidv4() };
@@ -51,6 +121,12 @@ export default function MemeCreatorPage() {
     setSelectedTexts(newOrder);
   };
 
+  const handleToggleBrandElement = (id: string) => {
+    setBrandElements(prev => prev.map(element => 
+      element.id === id ? { ...element, visible: !element.visible } : element
+    ));
+  };
+
   return (
     <div 
       className="mx-auto md:px-24 py-12 px-4 font-[Melon] pt-28 min-h-screen bg-[#C92D2E] text-white"
@@ -77,6 +153,7 @@ export default function MemeCreatorPage() {
             onRemoveSticker={handleRemoveSticker}
             selectedTemplate={selectedTemplate}
             fabricCanvasRef={fabricCanvasRef}
+            setCanvasSize={setCanvasSize}
           />
         </div>
 
@@ -137,6 +214,8 @@ export default function MemeCreatorPage() {
                       onRemoveText={handleRemoveText}
                       onReorderStickers={handleReorderStickers}
                       onReorderTexts={handleReorderTexts}
+                      brandElements={brandElements}
+                      onToggleBrandElement={handleToggleBrandElement}
                       canvasRef={fabricCanvasRef}
                     />
                   </div>
