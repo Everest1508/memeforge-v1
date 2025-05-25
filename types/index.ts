@@ -64,6 +64,7 @@ export interface TextElement {
   fontFamily?: string;
   borderColor?: string; 
   fontWeight?: string;
+  backgroundColor?: string;
 }
 
 
@@ -71,4 +72,18 @@ interface SubmissionData {
   vercel_blob_url: string;
   email: string;
   x_post_url: string;
+}
+
+export interface BrandElement {
+  id: string;
+  type: 'logo' | 'website';
+  position: 'top-right' | 'bottom-right';
+  visible: boolean;
+  url?: string;
+  text?: string;
+  left?: number;
+  top?: number;
+  width?: number;
+  height?: number;
+  zIndex?: number;
 }

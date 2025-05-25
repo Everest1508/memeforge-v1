@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from "react";
-import { Sticker, Template, TextElement } from "@/types";
+import { Sticker, Template, TextElement, BrandElement } from "@/types";
 import { Canvas, Image as FabricImage, Text as FabricText } from "fabric";
 import { Download, MoveHorizontal, MoveVertical, SendIcon, Share, Share2, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,7 @@ interface MemeCanvasProps {
   selectedTemplate: Template | null;
   selectedTexts: TextElement[];
   fabricCanvasRef: React.MutableRefObject<Canvas | null>;
+  setCanvasSize: (size: { width: number; height: number }) => void;
 }
 
 interface ExtendedFabricImage extends FabricImage {
@@ -27,7 +28,7 @@ interface ExtendedFabricText extends FabricText {
   id?: string;
 }
 
-const MemeCanvas = ({ selectedStickers, onRemoveSticker, selectedTemplate, selectedTexts,fabricCanvasRef }: MemeCanvasProps) => {
+const MemeCanvas = ({ selectedStickers, onRemoveSticker, selectedTemplate, selectedTexts,fabricCanvasRef, setCanvasSize }: MemeCanvasProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [canvasWidth, setCanvasWidth] = useState(600);
   const [canvasHeight, setCanvasHeight] = useState(600);
@@ -36,7 +37,6 @@ const MemeCanvas = ({ selectedStickers, onRemoveSticker, selectedTemplate, selec
   const [modalIsOpen, setModalIsOpen] = useState(true);
   const { data: session } = useSession();
   const [backgroundColor, setBackgroundColor] = useState<string>("#C92D2E"); // Default background color});
- 
 
   useEffect(() => {
     if (fabricCanvasRef.current) {
@@ -80,8 +80,9 @@ const MemeCanvas = ({ selectedStickers, onRemoveSticker, selectedTemplate, selec
           fontSize: textElement.fontSize || 24,
           fill: textElement.color || "black",
           fontFamily: textElement.fontFamily || "Arial",
-          fontWeight: textElement.fontWeight || "normal", // <-- ADD THIS
-          borderColor: textElement.borderColor || "blue", // <-- ADD THIS
+          fontWeight: textElement.fontWeight || "normal",
+          borderColor: textElement.borderColor || "blue",
+          backgroundColor: textElement.id === 'memeforge-website' ? (textElement.backgroundColor || '#FFD600') : undefined,
         });
 
 
@@ -98,16 +99,17 @@ const MemeCanvas = ({ selectedStickers, onRemoveSticker, selectedTemplate, selec
           fontSize: textElement.fontSize || 24,
           fill: textElement.color || "black",
           fontFamily: textElement.fontFamily || "Arial",
-          fontWeight: textElement.fontWeight || "normal", // <-- ADD THIS
+          fontWeight: textElement.fontWeight || "normal",
           selectable: true,
           hasControls: true,
           lockScalingFlip: true,
           lockRotation: false,
           hasBorders: true,
-          borderColor: textElement.borderColor || "blue", // <-- ADD THIS
+          borderColor: textElement.borderColor || "blue",
           cornerColor: "blue",
           cornerSize: 8,
           transparentCorners: false,
+          backgroundColor: textElement.id === 'memeforge-website' ? (textElement.backgroundColor || '#FFD600') : undefined,
         }) as ExtendedFabricText;
         newText.id = textElement.id;
         (newText as any).customType = "addedText";
@@ -147,21 +149,26 @@ const MemeCanvas = ({ selectedStickers, onRemoveSticker, selectedTemplate, selec
           }).then((img: ExtendedFabricImage) => {
             const maxStickerSize = Math.min(canvasWidth, canvasHeight) * 0.2;
             const aspectRatio = img.width! / img.height!;
-
             let width = maxStickerSize;
             let height = maxStickerSize / aspectRatio;
-
             if (height > maxStickerSize) {
               height = maxStickerSize;
               width = maxStickerSize * aspectRatio;
             }
-
+            let left, top;
+            if (sticker.id === 'memeforge-logo') {
+              left = 0;
+              top = 0;
+            } else {
+              left = canvasWidth * 0.1;
+              top = canvasHeight * 0.1;
+            }
             img.set({
-              left: canvasWidth * 0.1,
-              top: canvasHeight * 0.1,
+              left,
+              top,
               scaleX: width / img.width!,
               scaleY: height / img.height!,
-              id: sticker.instanceId, // Use unique instanceId for each sticker
+              id: sticker.instanceId,
               selectable: true,
               hasControls: true,
               lockScalingFlip: true,
@@ -172,7 +179,6 @@ const MemeCanvas = ({ selectedStickers, onRemoveSticker, selectedTemplate, selec
               cornerSize: 8,
               transparentCorners: false,
             });
-
             canvas.add(img);
             canvas.renderAll();
           });
@@ -210,6 +216,7 @@ const MemeCanvas = ({ selectedStickers, onRemoveSticker, selectedTemplate, selec
 
       setCanvasWidth(newWidth);
       setCanvasHeight(newHeight);
+      setCanvasSize({ width: newWidth, height: newHeight });
       canvas.setWidth(newWidth);
       canvas.setHeight(newHeight);
 
@@ -243,6 +250,23 @@ const MemeCanvas = ({ selectedStickers, onRemoveSticker, selectedTemplate, selec
     }
   }, [selectedTemplate, uploadedTemplate]);
 
+  useEffect(() => {
+    if (!fabricCanvasRef.current) return;
+    const canvas = fabricCanvasRef.current;
+    // Логотип
+    const logoObj = canvas.getObjects().find(obj => (obj as any).id === 'memeforge-logo');
+    if (logoObj) {
+      logoObj.set({ left: -20, top: -20 });
+      logoObj.setCoords();
+    }
+    // Надпись
+    const textObj = canvas.getObjects().find(obj => (obj as any).id === 'memeforge-website');
+    if (textObj) {
+      textObj.set({ left: 10, top: canvas.height - 40 });
+      textObj.setCoords();
+    }
+    canvas.renderAll();
+  }, [canvasWidth, canvasHeight]);
 
   const handleDownload = () => {
     if (fabricCanvasRef.current) {
